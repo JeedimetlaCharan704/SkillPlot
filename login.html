@@ -30,7 +30,7 @@
 
   <script>
     (function () {
-      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var saved = (function() { try { var s = JSON.parse(localStorage.getItem('skillpilot_state')); if (s && s.theme) return s.theme } catch(e) {} return localStorage.getItem('skillpilot_theme') || 'system' })()
       var theme = saved === 'system'
         ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
         : saved

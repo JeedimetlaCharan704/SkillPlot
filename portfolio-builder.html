@@ -8,7 +8,7 @@
 
   <script>
     (function () {
-      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var saved = (function() { try { var s = JSON.parse(localStorage.getItem('skillpilot_state')); if (s && s.theme) return s.theme } catch(e) {} return localStorage.getItem('skillpilot_theme') || 'system' })()
       var theme = saved === 'system'
         ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
         : saved
@@ -43,7 +43,7 @@
         <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
         <div class="dash-user-badge">
           <div class="dash-avatar" id="dash-avatar">AS</div>
-          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Aryan Sharma</span><span class="dash-user-role" id="dash-user-role">Student</span></div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">User</span><span class="dash-user-role" id="dash-user-role">Loading...</span></div>
           <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
         </div>
       </div>

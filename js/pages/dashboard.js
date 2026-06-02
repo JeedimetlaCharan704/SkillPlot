@@ -20,7 +20,7 @@
         : mode
       document.documentElement.setAttribute('data-theme', effective)
       document.documentElement.setAttribute('data-theme-mode', mode)
-      localStorage.setItem('skillpilot_theme', mode)
+      if (typeof Store !== 'undefined') Store.set('theme', mode)
       var icon = toggle.querySelector('i')
       icon.className = THEME_ICONS[mode] || THEME_ICONS.light
       toggle.setAttribute('aria-label', 'Theme: ' + mode)
@@ -147,7 +147,7 @@
         RecruiterService.compute(),
         PlacementService.predict(),
         (Store.get('resumeAnalysis') ? Promise.resolve(Store.get('resumeAnalysis')) : ResumeService.analyze('')),
-        SkillService.analyzeGap('data-scientist'),
+        (function () { var cr = Store.get('careerRecommendations'); var target = cr && cr.topRecommendation ? cr.topRecommendation.id : null; return target ? SkillService.analyzeGap(target) : Promise.resolve(null) })(),
         Store.get('user')?.githubUsername ? GitHubService.fetchProfile(Store.get('user').githubUsername) : Promise.resolve(null)
       ])
 
@@ -589,7 +589,7 @@
           '<div class="career-card-match"><span class="career-match-value ' + matchClass + '">' + rec.matchPercentage + '%</span><span class="career-match-label">Match</span></div>' +
         '</div>' +
         '<div class="career-card-details">' +
-          '<div class="career-detail-item"><span class="career-detail-label">Salary</span><span class="career-detail-value">₹' + (rec.salaryRange?.min || 0) + 'K - ₹' + (rec.salaryRange?.max || 0) + 'K</span></div>' +
+          '<div class="career-detail-item"><span class="career-detail-label">Salary</span><span class="career-detail-value">₹' + ((rec.salaryRange?.min || 0) / 100000).toFixed(1) + 'L - ₹' + ((rec.salaryRange?.max || 0) / 100000).toFixed(1) + 'L</span></div>' +
           '<div class="career-detail-item"><span class="career-detail-label">Demand</span><span class="career-detail-value">' + (rec.demandLevel || 'Moderate') + '</span></div>' +
           '<div class="career-detail-item"><span class="career-detail-label">Difficulty</span><span class="career-detail-value">' + (rec.difficulty?.label || 'Medium') + '</span></div>' +
           '<div class="career-detail-item"><span class="career-detail-label">Skills Gap</span><span class="career-detail-value">' + missingSkills.length + ' missing</span></div>' +

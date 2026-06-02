@@ -46,7 +46,7 @@
         : mode
       document.documentElement.setAttribute('data-theme', effective)
       document.documentElement.setAttribute('data-theme-mode', mode)
-      localStorage.setItem('skillpilot_theme', mode)
+      Store.set('theme', mode)
       var icon = toggle.querySelector('i')
       icon.className = THEME_ICONS[mode] || THEME_ICONS.light
       toggle.title = 'Theme: ' + (THEME_LABELS[mode] || mode)

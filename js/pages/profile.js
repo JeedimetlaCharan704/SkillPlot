@@ -14,7 +14,7 @@
       var eff = mode === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : mode
       document.documentElement.setAttribute('data-theme', eff)
       document.documentElement.setAttribute('data-theme-mode', mode)
-      localStorage.setItem('skillpilot_theme', mode)
+      Store.set('theme', mode)
       var icon = toggle.querySelector('i')
       icon.className = THEME_ICONS[mode] || THEME_ICONS.light
       toggle.setAttribute('aria-label', 'Theme: ' + mode)

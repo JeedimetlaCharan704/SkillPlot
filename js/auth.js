@@ -1,53 +1,52 @@
-/**
- * Authentication and Route Guarding Logic
- * Simulates a frontend-only authentication system using localStorage.
- */
+(function () {
+  var currentPath = (window.location.pathname.split('/').pop() || 'index.html').split('?')[0].split('#')[0]
 
-const AUTH_KEY = 'currentUserRole';
+  function getStoreValue(key) {
+    try {
+      var raw = localStorage.getItem('skillpilot_state')
+      if (!raw) return null
+      return JSON.parse(raw)[key]
+    } catch (e) { return null }
+  }
 
-// Simple Auth Guard - Runs immediately on page load
-function authGuard() {
-    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-    const currentUserRole = localStorage.getItem(AUTH_KEY);
+  var isLoggedIn = getStoreValue('isLoggedIn')
+  var userRole = getStoreValue('userRole')
+  var isLoginPage = currentPath === 'login.html'
 
-    // If on login page, redirect if already logged in
-    if (currentPath === 'login.html') {
-        if (currentUserRole === 'student') {
-            window.location.href = 'index.html';
-        } else if (currentUserRole === 'admin') {
-            window.location.href = 'admin.html';
+  if (isLoginPage) {
+    if (isLoggedIn) {
+      var redirect = userRole === 'mentor' || userRole === 'recruiter' || userRole === 'admin' ? 'admin.html' : 'index.html'
+      window.location.href = redirect
+    }
+    return
+  }
+
+  if (!isLoggedIn) {
+    window.location.href = 'login.html'
+    return
+  }
+
+  if (currentPath.startsWith('admin') && userRole !== 'mentor' && userRole !== 'recruiter' && userRole !== 'admin') {
+    window.location.href = 'index.html'
+    return
+  }
+
+  if (!currentPath.startsWith('admin') && (userRole === 'recruiter' || userRole === 'admin')) {
+    window.location.href = 'admin.html'
+    return
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.logout-btn, #logout-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault()
+        if (typeof Store !== 'undefined') {
+          Store.set('user', null)
+          Store.set('isLoggedIn', false)
+          Store.set('userRole', null)
         }
-        return; // Stop further checks on login page
-    }
-
-    // If not logged in and trying to access a protected page
-    if (!currentUserRole) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    // Role-based route guarding
-    const isAdminPage = currentPath.startsWith('admin');
-    
-    if (isAdminPage && currentUserRole !== 'admin') {
-        alert('Access Denied: You need Administrator privileges to view this page.');
-        window.location.href = 'index.html';
-    } else if (!isAdminPage && currentUserRole === 'admin') {
-        // Optional: prevent admin from viewing student pages directly, or just warn
-        // We'll allow it but you could force redirect back to admin.html
-    }
-}
-
-// Run the auth guard immediately
-authGuard();
-
-document.addEventListener('DOMContentLoaded', () => {
-    const logoutBtns = document.querySelectorAll('.logout-btn, #logout-btn');
-    logoutBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem(AUTH_KEY);
-            window.location.href = 'login.html';
-        });
-    });
-});
+        window.location.href = 'login.html'
+      })
+    })
+  })
+})()

@@ -8,7 +8,7 @@
 
   <script>
     (function () {
-      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var saved = (function() { try { var s = JSON.parse(localStorage.getItem('skillpilot_state')); if (s && s.theme) return s.theme } catch(e) {} return localStorage.getItem('skillpilot_theme') || 'system' })()
       var theme = saved === 'system'
         ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
         : saved
@@ -90,7 +90,7 @@
       <div class="dash-header">
         <div>
           <h1 class="dash-title">Dashboard</h1>
-          <p class="dash-subtitle" id="dash-subtitle">Welcome back, Aryan. Here's your career snapshot.</p>
+          <p class="dash-subtitle" id="dash-subtitle">Welcome back. Here's your career snapshot.</p>
         </div>
         <div class="dash-header-actions">
           <button class="dash-export-btn" id="dash-export-btn" title="Export career report as PDF">
