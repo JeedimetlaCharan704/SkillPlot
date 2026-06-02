@@ -93,6 +93,8 @@ const AuthService = (function () {
   }
 
   async function register (profile) {
+    Store.reset()
+
     // Try API first
     if (typeof ApiService !== 'undefined') {
       var apiResult = await ApiService.auth.register(profile.name, profile.email, profile.password, profile.role)

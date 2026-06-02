@@ -643,8 +643,8 @@
   function init () {
     initTheme(); initSidebar(); initLogout(); loadUser(); initModals(); initExports()
 
-    // Load demo profile if needed
-    if (!Store.get('user') && typeof DemoProfile !== 'undefined' && DemoProfile) {
+    // Load demo profile ONLY if no user at all and on a fresh visit
+    if (!Store.get('user') && !Store.get('isLoggedIn') && typeof DemoProfile !== 'undefined' && DemoProfile) {
       Store.set('user', DemoProfile.user)
       Store.set('isLoggedIn', true)
       Store.set('userRole', 'student')

@@ -468,7 +468,7 @@
     initTheme(); initSidebar(); initLogout(); loadUser()
 
     // Load demo profile if needed
-    if (!Store.get('user') && typeof DemoProfile !== 'undefined' && DemoProfile) {
+    if (!Store.get('user') && !Store.get('isLoggedIn') && typeof DemoProfile !== 'undefined' && DemoProfile) {
       Store.set('user', DemoProfile.user); Store.set('isLoggedIn', true); Store.set('userRole', 'student'); Store.set('isDemoProfile', true)
       var u = Store.get('user')
       u.skills = DemoProfile.skills; u.projects = DemoProfile.projects; u.certifications = DemoProfile.certifications; u.badges = DemoProfile.badges

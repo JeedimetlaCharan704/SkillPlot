@@ -585,7 +585,7 @@
 
     // Init demo profile if needed
     var user = Store.get('user')
-    if (!user && typeof DemoProfile !== 'undefined' && DemoProfile) {
+    if (!user && !Store.get('isLoggedIn') && typeof DemoProfile !== 'undefined' && DemoProfile) {
       Store.set('user', DemoProfile.user)
       Store.set('isLoggedIn', true)
       Store.set('userRole', 'student')

@@ -146,7 +146,7 @@
         CareerService.getRecommendations(),
         RecruiterService.compute(),
         PlacementService.predict(),
-        ResumeService.analyze('Demo profile analysis'),
+        (Store.get('resumeAnalysis') ? Promise.resolve(Store.get('resumeAnalysis')) : ResumeService.analyze('')),
         SkillService.analyzeGap('data-scientist'),
         Store.get('user')?.githubUsername ? GitHubService.fetchProfile(Store.get('user').githubUsername) : Promise.resolve(null)
       ])
