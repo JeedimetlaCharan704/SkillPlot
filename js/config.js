@@ -6,12 +6,12 @@ var APP_CONFIG = {
         ? 'http://localhost:5000/api'
         : '/api'
     }
-    return 'https://skillpilot-api.onrender.com/api'
+    return 'https://skillplot-api-1cw0.onrender.com/api'
   },
 
   getWsUrl: function () {
     var host = window.location.hostname
     if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:5000'
-    return 'https://skillpilot-api.onrender.com'
+    return 'https://skillplot-api-1cw0.onrender.com'
   },
 }
