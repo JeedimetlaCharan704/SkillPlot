@@ -467,15 +467,6 @@
   function init () {
     initTheme(); initSidebar(); initLogout(); loadUser()
 
-    // Load demo profile if needed
-    if (!Store.get('user') && !Store.get('isLoggedIn') && typeof DemoProfile !== 'undefined' && DemoProfile) {
-      Store.set('user', DemoProfile.user); Store.set('isLoggedIn', true); Store.set('userRole', 'student'); Store.set('isDemoProfile', true)
-      var u = Store.get('user')
-      u.skills = DemoProfile.skills; u.projects = DemoProfile.projects; u.certifications = DemoProfile.certifications; u.badges = DemoProfile.badges
-      Store.set('user', u)
-      loadUser()
-    }
-
     var btn = document.getElementById('predict-btn')
     if (btn) btn.addEventListener('click', runPrediction)
     setTimeout(runPrediction, 300)

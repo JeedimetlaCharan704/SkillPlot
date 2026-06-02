@@ -403,13 +403,6 @@
   function init () {
     initTheme(); initSidebar(); initLogout(); loadUser(); initMode(); initExports()
 
-    if (!Store.get('user') && !Store.get('isLoggedIn') && typeof DemoProfile !== 'undefined' && DemoProfile) {
-      Store.set('user', DemoProfile.user); Store.set('isLoggedIn', true); Store.set('userRole', 'student'); Store.set('isDemoProfile', true)
-      var u = Store.get('user')
-      u.github = DemoProfile.github; u.skills = DemoProfile.skills; u.projects = DemoProfile.projects
-      Store.set('user', u)
-    }
-
     document.getElementById('gh-analyze-btn').addEventListener('click', runAnalysis)
     document.getElementById('gh-username').addEventListener('keydown', function (e) { if (e.key === 'Enter') runAnalysis() })
     setTimeout(runAnalysis, 300)

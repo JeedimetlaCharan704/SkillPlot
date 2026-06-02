@@ -81,8 +81,6 @@
         items.forEach(function (i) { i.classList.remove('active') })
         this.classList.add('active')
         if (window.innerWidth <= 992) sidebar.classList.remove('open')
-        var href = this.getAttribute('href')
-        if (href && href !== '#') window.location.href = href
       })
     })
   }

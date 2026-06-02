@@ -12,20 +12,21 @@ const AuthService = (function () {
     return new Promise(function (resolve) { setTimeout(resolve, ms || 600 + Math.random() * 400) })
   }
 
-  function _setSession (user) {
+  function _setSession (user, opts) {
     var now = Date.now()
     Store.set('user', { ...user, id: user.id || 'usr_' + now, avatar: user.avatar || null, joinedAt: new Date().toISOString() })
     Store.set('isLoggedIn', true)
     Store.set('userRole', user.role)
     Store.set('sessionStart', now)
     Store.set('lastActivity', now)
+    if (opts && opts.isDemo != null) Store.set('isDemoProfile', opts.isDemo)
   }
 
   function _handleApiResult (result) {
     if (result.success && result.data && result.data.token) {
       ApiService.setToken(result.data.token)
       var user = result.data.user || result.data
-      _setSession(user)
+      _setSession(user, { isDemo: false })
       var redirect = ROLE_REDIRECTS[user.role] || 'index.html'
       return { success: true, error: null, data: { user: Store.get('user'), redirect: redirect } }
     }
@@ -41,7 +42,7 @@ const AuthService = (function () {
       if (apiResult.success && apiResult.data) {
         ApiService.setToken(apiResult.data.token || '')
         var user = apiResult.data.user || apiResult.data
-        _setSession(user)
+        _setSession(user, { isDemo: false })
         return { success: true, error: null, data: { user: Store.get('user'), redirect: ROLE_REDIRECTS[user.role] || 'index.html' } }
       }
       if (apiResult.error !== 'offline') {
@@ -52,16 +53,36 @@ const AuthService = (function () {
       }
     }
 
-    // Fallback to localStorage demo auth
+    // Fallback to localStorage registered users first, then demo auth
     await _simulateLatency()
+    try {
+      var regRaw = localStorage.getItem('skillpilot_registered_users')
+      var regUsers = regRaw ? JSON.parse(regRaw) : {}
+      var regMatch = regUsers[email]
+      if (regMatch && regMatch.password === password) {
+        var user = Object.assign({}, regMatch.profile)
+        _setSession(user, { isDemo: false })
+        return { success: true, error: null, data: { user: Store.get('user'), redirect: ROLE_REDIRECTS[user.role] || 'index.html' } }
+      }
+    } catch (e) {}
     var matched = Object.values(DEMO_USERS).find(function (u) { return u.email === email && u.password === password })
     if (!matched) {
       return { success: false, error: 'Invalid email or password. Try demo credentials.', data: null, suggestions: ['Use student@skillpilot.ai / demo123', 'Use mentor@skillpilot.ai / demo123', 'Use recruiter@skillpilot.ai / demo123', 'Use admin@skillpilot.ai / admin123'] }
     }
     var user = Object.assign({}, matched)
     delete user.password
-    _setSession(user)
+    _setSession(user, { isDemo: true })
     return { success: true, error: null, data: { user: Store.get('user'), redirect: ROLE_REDIRECTS[user.role] || 'index.html' } }
+  }
+
+  // Store registered users so they can log back in via fallback
+  function _saveRegisteredUser (email, password, userData) {
+    try {
+      var raw = localStorage.getItem('skillpilot_registered_users')
+      var users = raw ? JSON.parse(raw) : {}
+      users[email] = { password: password, profile: userData }
+      localStorage.setItem('skillpilot_registered_users', JSON.stringify(users))
+    } catch (e) {}
   }
 
   async function loginWithProvider (provider) {
@@ -72,7 +93,7 @@ const AuthService = (function () {
       linkedin: { email: 'aryan.sharma@linkedin.com', name: 'Aryan Sharma', role: 'student' }
     }
     var profile = providerUsers[provider] || providerUsers.google
-    _setSession({ ...profile, provider: provider })
+    _setSession({ ...profile, provider: provider }, { isDemo: false })
     return { success: true, error: null, data: { user: Store.get('user'), redirect: 'index.html' } }
   }
 
@@ -109,7 +130,8 @@ const AuthService = (function () {
     await _simulateLatency(800)
     var user = Object.assign({}, profile, { id: 'usr_' + Date.now(), joinedAt: new Date().toISOString() })
     delete user.password
-    _setSession(user)
+    _saveRegisteredUser(profile.email, profile.password, user)
+    _setSession(user, { isDemo: false })
     return { success: true, data: { user: Store.get('user'), redirect: ROLE_REDIRECTS[user.role] || 'index.html' } }
   }
 

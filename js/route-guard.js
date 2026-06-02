@@ -18,7 +18,7 @@
 
   if (isLoginPage) {
     if (isLoggedIn) {
-      var redirect = userRole === 'mentor' || userRole === 'recruiter' || userRole === 'admin' ? 'admin.html' : 'index.html'
+      var redirect = userRole === 'mentor' ? 'mentor-dashboard.html' : userRole === 'recruiter' || userRole === 'admin' ? 'admin.html' : 'index.html'
       window.location.href = redirect
     }
     return
@@ -34,8 +34,5 @@
     return
   }
 
-  if (!currentPath.startsWith('admin') && (userRole === 'recruiter' || userRole === 'admin')) {
-    window.location.href = 'admin.html'
-    return
-  }
+  // Allow all roles on any page; only block students from admin pages
 })()

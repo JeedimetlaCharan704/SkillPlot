@@ -643,27 +643,6 @@
   function init () {
     initTheme(); initSidebar(); initLogout(); loadUser(); initModals(); initExports()
 
-    // Load demo profile ONLY if no user at all and on a fresh visit
-    if (!Store.get('user') && !Store.get('isLoggedIn') && typeof DemoProfile !== 'undefined' && DemoProfile) {
-      Store.set('user', DemoProfile.user)
-      Store.set('isLoggedIn', true)
-      Store.set('userRole', 'student')
-      Store.set('isDemoProfile', true)
-      var u = Store.get('user')
-      u.skills = DemoProfile.skills
-      u.projects = DemoProfile.projects
-      u.certifications = DemoProfile.certifications
-      u.badges = DemoProfile.badges
-      u.internships = DemoProfile.internships
-      u.github = DemoProfile.github
-      u.linkedin = DemoProfile.linkedin
-      u.learningHistory = DemoProfile.learningHistory
-      u.learningStreak = DemoProfile.learningStreak
-      u.resumeAnalysis = DemoProfile.resumeAnalysis
-      Store.set('user', u)
-      loadUser()
-    }
-
     // Modal save buttons
     document.getElementById('project-save-btn').addEventListener('click', saveProject)
     document.getElementById('cert-save-btn').addEventListener('click', saveCert)
