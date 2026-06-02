@@ -138,3 +138,7 @@ const AuthService = (function () {
 
   return { login: login, loginWithProvider: loginWithProvider, logout: logout, getSession: getSession, register: register, updateActivity: updateActivity, isSessionExpired: isSessionExpired, getSessionRemaining: getSessionRemaining }
 })()
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { AuthService }
+}
