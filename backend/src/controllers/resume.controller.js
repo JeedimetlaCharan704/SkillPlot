@@ -1,6 +1,7 @@
 const Resume = require('../models/Resume')
 const resumeService = require('../services/resume.service')
 const { AppError } = require('../middleware/errorHandler')
+const logger = require('../services/logger.service')
 
 exports.analyze = async (req, res, next) => {
   try {
@@ -10,13 +11,25 @@ exports.analyze = async (req, res, next) => {
       throw new AppError('Resume content must be at least 50 characters', 400)
     }
 
-    const analysis = resumeService.analyzeResume(content)
+    let analysis = resumeService.analyzeResume(content)
+
+    const aiResult = await resumeService.analyzeResumeWithAI(content, targetRole)
+    if (aiResult) {
+      logger.info('AI-powered resume analysis used')
+      if (aiResult.scores) analysis.scores = aiResult.scores
+      if (aiResult.strengths) analysis.strengths = aiResult.strengths
+      if (aiResult.weaknesses) analysis.weaknesses = aiResult.weaknesses
+      if (aiResult.suggestions) analysis.suggestions = aiResult.suggestions
+      if (aiResult.matchedKeywords) analysis.matchedKeywords = aiResult.matchedKeywords
+      if (aiResult.missingKeywords) analysis.missingKeywords = aiResult.missingKeywords
+    }
 
     const resume = await Resume.create({
       user: req.user._id,
       content: content.slice(0, 10000),
       textContent: content.slice(0, 10000),
       targetRole: targetRole || '',
+      aiEnhanced: !!aiResult,
       ...analysis,
     })
 

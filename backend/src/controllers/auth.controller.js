@@ -4,6 +4,7 @@ const Profile = require('../models/Profile')
 const { generateToken } = require('../middleware/auth')
 const { AppError } = require('../middleware/errorHandler')
 const logger = require('../services/logger.service')
+const emailService = require('../services/email.service')
 
 exports.register = async (req, res, next) => {
   try {
@@ -91,12 +92,17 @@ exports.forgotPassword = async (req, res, next) => {
 
     const resetUrl = `${(process.env.CORS_ORIGIN || 'http://localhost:8080').split(',')[0].trim()}/reset-password.html?token=${resetToken}`
 
-    logger.info(`Password reset requested for ${email}`, { resetUrl })
+    const emailResult = await emailService.sendPasswordReset(email, resetUrl)
+
+    const message = emailResult.sent
+      ? 'Password reset link sent to your email'
+      : 'Password reset link generated (email not configured)'
 
     res.json({
       data: {
-        message: 'Password reset link sent to email',
+        message,
         resetUrl,
+        emailSent: emailResult.sent,
       },
     })
   } catch (err) {

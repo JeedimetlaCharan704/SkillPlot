@@ -45,7 +45,8 @@ const resumeSchema = new mongoose.Schema({
   weaknesses: [{ type: String }],
 
   targetRole: { type: String, default: '' },
-  analysisVersion: { type: String, default: '1.0' },
+  aiEnhanced: { type: Boolean, default: false },
+  analysisVersion: { type: String, default: '2.0' },
 
   raw: { type: mongoose.Schema.Types.Mixed, default: {} },
 }, { timestamps: true })

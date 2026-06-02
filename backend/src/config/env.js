@@ -22,4 +22,10 @@ module.exports = {
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
   rateLimitWindow: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 900000,
   rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
+  openaiApiKey: process.env.OPENAI_API_KEY || '',
+  smtpHost: process.env.SMTP_HOST || '',
+  smtpPort: parseInt(process.env.SMTP_PORT, 10) || 587,
+  smtpUser: process.env.SMTP_USER || '',
+  smtpPass: process.env.SMTP_PASS || '',
+  emailFrom: process.env.EMAIL_FROM || 'noreply@skillplot.com',
 }
