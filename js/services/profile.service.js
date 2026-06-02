@@ -32,12 +32,12 @@ var ProfileService = (function () {
       projects: user.projects || [],
       certifications: user.certifications || [],
       internships: user.internships || [],
-      github: user.github || null,
+      github: user.github || Store.get('githubData') || null,
       linkedin: user.linkedin || null,
-      badges: user.badges || [],
-      learningHistory: user.learningHistory || [],
-      learningStreak: user.learningStreak || { current: 0, longest: 0 },
-      resumeAnalysis: user.resumeAnalysis || null
+      badges: user.badges || Store.get('badges') || [],
+      learningHistory: user.learningHistory || Store.get('activityLog') || [],
+      learningStreak: user.learningStreak || Store.get('learningStreak') || { current: 0, longest: 0 },
+      resumeAnalysis: user.resumeAnalysis || Store.get('resumeAnalysis') || null
     }
     return profile
   }

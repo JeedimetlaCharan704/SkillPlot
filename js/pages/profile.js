@@ -441,6 +441,10 @@
     var count = document.getElementById('pr-badges-count')
     if (!grid) return
     var badges = profile.badges || []
+    // Normalize: if badges are string IDs, convert to objects
+    if (badges.length && typeof badges[0] === 'string') {
+      badges = badges.map(function (id) { return { id: id, name: id.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase() }), unlockedAt: null, condition: '' } })
+    }
     if (count) count.textContent = badges.filter(function (b) { return b.unlockedAt }).length + '/' + badges.length + ' unlocked'
 
     grid.innerHTML = badges.map(function (b) {

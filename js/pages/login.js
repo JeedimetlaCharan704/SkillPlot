@@ -369,7 +369,10 @@
       u.projects = profile.projects
       u.certifications = profile.certifications
       u.internships = profile.internships
-      u.badges = profile.badges.map(b => b.id)
+      u.badges = profile.badges
+      u.github = profile.github || null
+      u.linkedin = profile.linkedin || null
+      u.learningHistory = profile.learningHistory || []
       return u
     })
 
