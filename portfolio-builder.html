@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Portfolio Builder</title>
+  <meta name="description" content="Generate a professional developer portfolio directly from your profile data. Production-ready in under 30 seconds.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/portfolio-builder.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <nav class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <div class="dash-logo"><i class="fa-solid fa-brain dash-logo-icon"></i><span class="dash-logo-text">SkillPilot AI</span></div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+        <div class="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Aryan Sharma</span><span class="dash-user-role" id="dash-user-role">Student</span></div>
+          <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-layout">
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item active" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Portfolio Builder</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Generate a professional developer portfolio from your profile data. Production-ready in under 30 seconds.</p>
+        </div>
+        <div class="dash-header-actions">
+          <div class="pb-preview-actions" id="pb-export-group" style="display:none">
+            <button class="pr-export-btn" id="export-json"><i class="fa-solid fa-file-code"></i> JSON</button>
+            <button class="pr-export-btn" id="export-md"><i class="fa-solid fa-file-lines"></i> MD</button>
+            <button class="pr-export-btn" id="export-html"><i class="fa-solid fa-file-code"></i> HTML</button>
+            <button class="pr-export-btn" id="export-pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skeletons -->
+      <div data-skel style="display:none">
+        <div class="pb-health">
+          <div class="skeleton-card" style="height:160px"></div>
+          <div class="skeleton-card" style="height:160px"></div>
+        </div>
+        <div class="skeleton-card" style="height:60px"></div>
+        <div class="skeleton-card" style="height:400px"></div>
+      </div>
+
+      <div id="pb-results" style="display:none">
+        <!-- Health Score -->
+        <div class="pb-health" id="pb-health"></div>
+
+        <!-- Themes -->
+        <div style="margin-bottom:var(--space-2)"><span style="font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-2)">Choose a Theme</span></div>
+        <div class="pb-themes" id="pb-themes"></div>
+
+        <!-- Preview -->
+        <div class="pb-preview-card">
+          <div class="pb-preview-header">
+            <span class="pb-preview-title"><i class="fa-solid fa-eye" style="color:var(--primary);margin-right:6px"></i> Portfolio Preview</span>
+            <div class="pb-preview-actions">
+              <button class="pr-export-btn" id="open-portfolio-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open</button>
+              <button class="pr-export-btn" id="save-html-btn"><i class="fa-solid fa-download"></i> Save HTML</button>
+            </div>
+          </div>
+          <iframe class="pb-preview-frame" id="pb-preview-frame" sandbox="allow-scripts allow-same-origin" title="Portfolio Preview"></iframe>
+        </div>
+
+        <!-- Quality Issues -->
+        <div style="margin-bottom:var(--space-2)"><span style="font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-2)">Quality Issues</span></div>
+        <div class="pb-issues" id="pb-issues"></div>
+
+        <!-- Improvements -->
+        <div style="margin-bottom:var(--space-2)"><span style="font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-2)">Improvement Engine</span></div>
+        <div class="pb-improvements" id="pb-improvements"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/data/career-paths.js"></script>
+  <script src="js/data/companies.js"></script>
+  <script src="js/data/placement-data.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/portfolio-builder.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/utils/kpi.js"></script>
+  <script src="js/pages/portfolio-builder.js"></script>
+</body>
+</html>

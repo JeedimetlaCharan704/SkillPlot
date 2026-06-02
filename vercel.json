@@ -1,0 +1,48 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "skillpilot-ai",
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/reset-password", "destination": "/reset-password.html" },
+    { "source": "/resume-analyzer", "destination": "/resume-analyzer.html" },
+    { "source": "/skill-gap-analyzer", "destination": "/skill-gap-analyzer.html" },
+    { "source": "/placement-predictor", "destination": "/placement-predictor.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/github-analytics", "destination": "/github-analytics.html" },
+    { "source": "/portfolio-builder", "destination": "/portfolio-builder.html" },
+    { "source": "/mentor-dashboard", "destination": "/mentor-dashboard.html" },
+    { "source": "/internships", "destination": "/internships.html" },
+    { "source": "/brand-checker", "destination": "/brand-checker.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/(.*)", "destination": "/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/css/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/js/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}

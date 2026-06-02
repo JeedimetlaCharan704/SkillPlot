@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <script src="js/store/store.js"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.hash.replace(/^#/, '?'))
+      var token = params.get('token')
+      var userParam = params.get('user')
+      var error = params.get('error')
+
+      if (error) {
+        window.location.href = '/login.html'
+        if (typeof Toast !== 'undefined') {
+          setTimeout(function () { Toast.error(decodeURIComponent(error).replace(/\+/g, ' ')) }, 500)
+        }
+      } else if (token && userParam) {
+        try {
+          var user = JSON.parse(decodeURIComponent(userParam))
+          Store.set('user', user)
+          Store.set('isLoggedIn', true)
+          Store.set('userRole', user.role || 'student')
+          var redirect = user.role === 'student' ? 'index.html' : user.role === 'mentor' ? 'mentor-dashboard.html' : 'admin.html'
+          window.location.href = redirect
+        } catch (e) {
+          window.location.href = '/login.html'
+        }
+      } else {
+        window.location.href = '/login.html'
+      }
+    })()
+  </script>
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; background:#0F172A; color:#E2E8F0; font-family:system-ui,sans-serif; }
+    .spinner { width:32px; height:32px; border:3px solid rgba(79,70,229,0.2); border-top-color:#4F46E5; border-radius:50%; animation:spin .6s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg) } }
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+</body>
+</html>

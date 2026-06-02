@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: skillpilot-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: skillpilot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    container_name: skillpilot-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/skillpilot
+      - JWT_SECRET=change-this-to-a-secure-random-string
+      - JWT_EXPIRES_IN=7d
+      - GITHUB_TOKEN=
+      - CORS_ORIGIN=http://localhost:8080
+      - REDIS_URL=redis://redis:6379
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX=100
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    container_name: skillpilot-web
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+
+volumes:
+  mongo-data:

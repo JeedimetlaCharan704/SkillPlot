@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Resume Analyzer</title>
+  <meta name="description" content="Explainable resume intelligence engine. Trace every score to actual keywords, sections, and documented rules.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/resume-analyzer.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <!-- Navbar -->
+  <nav class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <div class="dash-logo"><i class="fa-solid fa-brain dash-logo-icon"></i><span class="dash-logo-text">SkillPilot AI</span></div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+        <div class="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Aryan Sharma</span><span class="dash-user-role" id="dash-user-role">Student</span></div>
+          <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-layout">
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item active" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+      <!-- Header -->
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Resume Analyzer</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Explainable resume intelligence. Every score traces to actual keywords, sections, and rules.</p>
+        </div>
+        <div class="dash-header-actions">
+          <button class="dash-export-btn" id="export-pdf" title="Export PDF report"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          <button class="dash-export-btn" id="export-json" title="Export JSON" style="background:var(--surface);color:var(--text);border-color:var(--border)"><i class="fa-solid fa-code"></i> JSON</button>
+          <button class="dash-export-btn" id="export-md" title="Export Markdown" style="background:var(--surface);color:var(--text);border-color:var(--border)"><i class="fa-solid fa-markdown"></i> MD</button>
+          <button class="dash-refresh-btn" id="analyze-btn" title="Run analysis"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+        </div>
+      </div>
+
+      <!-- === INPUT ZONE === -->
+      <section class="ra-section" id="section-input">
+        <div class="dash-section-header"><h2 class="dash-section-title">Resume Input</h2></div>
+        <div class="ra-input-zone">
+          <div class="ra-input-methods">
+            <button class="ra-input-method active" data-method="demo"><i class="fa-solid fa-user"></i> Demo Resume</button>
+            <button class="ra-input-method" data-method="paste"><i class="fa-solid fa-paste"></i> Paste Text</button>
+            <label class="ra-input-method" for="ra-file-upload"><i class="fa-solid fa-upload"></i> Upload File<input type="file" id="ra-file-upload" accept=".txt,.pdf,.docx" hidden></label>
+          </div>
+          <textarea class="ra-textarea" id="ra-textarea" rows="8" placeholder="Paste your resume text here, or use the Demo Resume to get started..."></textarea>
+        </div>
+      </section>
+
+      <!-- === SCORE CARDS === -->
+      <section class="ra-section" id="section-scores">
+        <div class="dash-section-header"><h2 class="dash-section-title">Resume Scores</h2></div>
+        <div class="ra-score-grid" id="ra-score-grid">
+          <div class="skeleton skeleton-kpi-card" data-skel="rs1"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          <div class="skeleton skeleton-kpi-card" data-skel="rs2"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          <div class="skeleton skeleton-kpi-card" data-skel="rs3"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          <div class="skeleton skeleton-kpi-card" data-skel="rs4"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          <div class="skeleton skeleton-kpi-card" data-skel="rs5"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+        </div>
+      </section>
+
+      <!-- === KEYWORD ANALYSIS + SECTION ANALYSIS + CHARTS === -->
+      <div class="ra-two-col">
+        <!-- LEFT: Keyword Analysis -->
+        <section class="ra-section" id="section-keywords">
+          <div class="dash-section-header"><h2 class="dash-section-title">Keyword Analysis</h2><span class="dash-section-badge" id="kw-count">0 found</span></div>
+          <div class="ra-keyword-categories" id="ra-keyword-categories">
+            <div class="skeleton skeleton-ra-card" data-skel="kw"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          </div>
+        </section>
+
+        <!-- RIGHT: Section Analysis + Charts -->
+        <div>
+          <section class="ra-section" id="section-sections">
+            <div class="dash-section-header"><h2 class="dash-section-title">Section Analysis</h2></div>
+            <div class="ra-section-grid" id="ra-section-grid">
+              <div class="skeleton skeleton-ra-card" data-skel="sec"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+            </div>
+          </section>
+
+          <section class="ra-section" id="section-charts">
+            <div class="dash-section-header"><h2 class="dash-section-title">Visualizations</h2></div>
+            <div class="ra-chart-grid">
+              <div class="chart-card"><div class="chart-card-header"><h3>Skill Distribution</h3></div><div class="chart-wrapper-sm"><canvas id="chart-skill-dist"></canvas></div></div>
+              <div class="chart-card"><div class="chart-card-header"><h3>ATS Compatibility</h3></div><div class="chart-wrapper-sm"><canvas id="chart-ats"></canvas></div></div>
+              <div class="chart-card"><div class="chart-card-header"><h3>Section Coverage</h3></div><div class="chart-wrapper-sm"><canvas id="chart-sections"></canvas></div></div>
+              <div class="chart-card"><div class="chart-card-header"><h3>Quality Breakdown</h3></div><div class="chart-wrapper-sm"><canvas id="chart-quality"></canvas></div></div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- === RECRUITER INSIGHTS + COMPARISON === -->
+      <div class="ra-two-col">
+        <section class="ra-section" id="section-insights">
+          <div class="dash-section-header"><h2 class="dash-section-title">Recruiter Insights</h2></div>
+          <div class="ra-insights" id="ra-insights">
+            <div class="skeleton skeleton-ra-card" data-skel="ins"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          </div>
+        </section>
+        <section class="ra-section" id="section-compare">
+          <div class="dash-section-header"><h2 class="dash-section-title">Career Match</h2></div>
+          <div class="ra-compare" id="ra-compare">
+            <div class="skeleton skeleton-ra-card" data-skel="cmp"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- === CALCULATION STEPS === -->
+      <section class="ra-section" id="section-steps">
+        <div class="dash-section-header"><h2 class="dash-section-title">Calculation Trace</h2><button class="dash-section-action" id="toggle-steps">Show</button></div>
+        <div class="ra-steps hidden" id="ra-steps"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/data/career-paths.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/resume.service.js"></script>
+  <script src="js/services/career.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/utils/kpi.js"></script>
+  <script src="js/pages/resume-analyzer.js"></script>
+</body>
+</html>

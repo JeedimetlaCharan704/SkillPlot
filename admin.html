@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Admin Dashboard</title>
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_state')
+      try {
+        var s = saved ? JSON.parse(saved) : {}
+        var mode = s.theme || 'system'
+        var theme = mode === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : mode
+        document.documentElement.setAttribute('data-theme', theme)
+        document.documentElement.setAttribute('data-theme-mode', mode)
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light')
+        document.documentElement.setAttribute('data-theme-mode', 'light')
+      }
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/admin.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+
+  <!-- Navbar -->
+  <nav class="dash-nav" id="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="dash-logo">
+          <i class="fa-solid fa-brain dash-logo-icon"></i>
+          <span class="dash-logo-text">SkillPilot AI</span>
+        </div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <div class="dash-user-badge" id="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AD</div>
+          <div class="dash-user-info">
+            <span class="dash-user-name" id="dash-user-name">Admin</span>
+            <span class="dash-user-role" id="dash-user-role">Administrator</span>
+          </div>
+          <button type="button" class="dash-logout-btn" id="dash-logout-btn" title="Sign out">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="dash-layout">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav" id="dash-sidebar-nav">
+        <a href="admin.html" class="dash-sidebar-item active" data-page="admin.html"><i class="fa-solid fa-shield-halved"></i><span>Admin Dashboard</span></a>
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="mentor-dashboard.html" class="dash-sidebar-item" data-page="mentor-dashboard.html"><i class="fa-solid fa-users"></i><span>Mentor Dashboard</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Admin Dashboard <span class="role-badge">Admin Mode</span></h1>
+          <p class="dash-subtitle">Full platform management — users, internships, companies, and activity.</p>
+        </div>
+        <div class="dash-header-actions">
+          <button id="post-internship-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Post Internship</button>
+        </div>
+      </div>
+
+      <!-- Statistics Section -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-details">
+            <h3 id="stat-students">0</h3>
+            <p>Active Users</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background-color: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="stat-details">
+            <h3 id="stat-internships">0</h3>
+            <p>Active Internships</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background-color: #fff3e0; color: #ef6c00;"><i class="fa-solid fa-file-alt"></i></div>
+          <div class="stat-details">
+            <h3 id="stat-pending">0</h3>
+            <p>Pending Applications</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background-color: #e3f2fd; color: #1565c0;"><i class="fa-solid fa-building"></i></div>
+          <div class="stat-details">
+            <h3 id="stat-companies">0</h3>
+            <p>Partner Companies</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="admin-tabs card" style="margin-bottom:24px;padding:0;overflow:hidden">
+        <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface-2)">
+          <button class="admin-tab active" data-tab="apps" id="tab-apps" style="flex:1;padding:14px 20px;border:none;background:none;cursor:pointer;font-weight:600;color:var(--text-3);border-bottom:2px solid transparent;transition:var(--transition-base)">
+            <i class="fa-solid fa-file-alt"></i> Applications
+          </button>
+          <button class="admin-tab" data-tab="users" id="tab-users" style="flex:1;padding:14px 20px;border:none;background:none;cursor:pointer;font-weight:600;color:var(--text-3);border-bottom:2px solid transparent;transition:var(--transition-base)">
+            <i class="fa-solid fa-users"></i> Users
+          </button>
+          <button class="admin-tab" data-tab="companies" id="tab-companies" style="flex:1;padding:14px 20px;border:none;background:none;cursor:pointer;font-weight:600;color:var(--text-3);border-bottom:2px solid transparent;transition:var(--transition-base)">
+            <i class="fa-solid fa-building"></i> Companies
+          </button>
+          <button class="admin-tab" data-tab="activity" id="tab-activity" style="flex:1;padding:14px 20px;border:none;background:none;cursor:pointer;font-weight:600;color:var(--text-3);border-bottom:2px solid transparent;transition:var(--transition-base)">
+            <i class="fa-solid fa-clock-rotate-left"></i> Activity
+          </button>
+        </div>
+      </div>
+
+      <!-- === TAB 1: Applications === -->
+      <div id="section-apps">
+        <div class="card">
+          <div class="card-header flex-between">
+            <h3>Internship Applications</h3>
+            <span style="font-size:0.85rem;color:var(--text-3)">Review, approve, or reject applications</span>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Applicant</th>
+                    <th>Roll No.</th>
+                    <th>Profile</th>
+                    <th>Company</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="applications-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === TAB 2: Users === -->
+      <div id="section-users" style="display:none">
+        <div class="card">
+          <div class="card-header flex-between">
+            <h3>Platform Users</h3>
+            <button id="add-user-btn" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add User</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === TAB 3: Companies === -->
+      <div id="section-companies" style="display:none">
+        <div class="card">
+          <div class="card-header flex-between">
+            <h3>Partner Companies</h3>
+            <button id="add-company-btn" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add Company</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Company</th>
+                    <th>Industry</th>
+                    <th>Location</th>
+                    <th>Students Placed</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="companies-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === TAB 4: Activity === -->
+      <div id="section-activity" style="display:none">
+        <div class="card">
+          <div class="card-header flex-between">
+            <h3>Activity Log</h3>
+            <span style="font-size:0.85rem;color:var(--text-3)">Recent platform actions</span>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="activity-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Review Application Modal -->
+  <div id="review-modal" class="modal-overlay hidden">
+    <div class="modal-content card">
+      <div class="card-header flex-between">
+        <h3>Review Application</h3>
+        <button id="close-review-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="card-body">
+        <div class="info-group mb-3">
+          <label>Applicant Name</label>
+          <p id="review-name">John Doe</p>
+        </div>
+        <div class="info-group mb-3">
+          <label>Internship Profile</label>
+          <p id="review-internship">Software Engineering Intern</p>
+        </div>
+        <div class="info-group mb-4">
+          <label>Company</label>
+          <p id="review-company">TCS</p>
+        </div>
+        <div class="form-group">
+          <label>Update Status</label>
+          <select id="review-status" class="form-control">
+            <option value="Pending">Pending Review</option>
+            <option value="Approved">Approved & Forwarded</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <button id="save-review-btn" class="btn btn-primary btn-full">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Internship Modal -->
+  <div id="post-internship-modal" class="modal-overlay hidden">
+    <div class="modal-content card" style="max-width:600px">
+      <div class="card-header flex-between">
+        <h3>Post New Internship</h3>
+        <button id="close-post-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="card-body">
+        <form id="post-internship-form">
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="post-company" class="form-control" required placeholder="e.g. Google">
+          </div>
+          <div class="form-group">
+            <label>Job Role / Title</label>
+            <input type="text" id="post-role" class="form-control" required placeholder="e.g. Software Engineering Intern">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="post-location" class="form-control" required placeholder="e.g. Bangalore, India (or Remote)">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+            <div class="form-group">
+              <label>Stipend</label>
+              <input type="text" id="post-stipend" class="form-control" required placeholder="e.g. ₹50,000 / month">
+            </div>
+            <div class="form-group">
+              <label>Duration</label>
+              <input type="text" id="post-duration" class="form-control" required placeholder="e.g. 6 Months">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tags / Skills (comma separated)</label>
+            <input type="text" id="post-tags" class="form-control" required placeholder="e.g. React, Node.js, AWS">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full mt-3">Post Internship</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div id="user-modal" class="modal-overlay hidden">
+    <div class="modal-content card" style="max-width:500px">
+      <div class="card-header flex-between">
+        <h3 id="user-modal-title">Add New User</h3>
+        <button id="close-user-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="card-body">
+        <form id="user-form">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="user-name" class="form-control" required placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="user-email" class="form-control" required placeholder="e.g. john@example.com">
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="user-role" class="form-control">
+              <option value="student">Student</option>
+              <option value="mentor">Mentor</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="user-status" class="form-control">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full mt-3">Save User</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company Modal -->
+  <div id="company-modal" class="modal-overlay hidden">
+    <div class="modal-content card" style="max-width:500px">
+      <div class="card-header flex-between">
+        <h3 id="company-modal-title">Add Partner Company</h3>
+        <button id="close-company-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="card-body">
+        <form id="company-form">
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="comp-name" class="form-control" required placeholder="e.g. Google">
+          </div>
+          <div class="form-group">
+            <label>Industry</label>
+            <input type="text" id="comp-industry" class="form-control" required placeholder="e.g. Internet Services">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="comp-location" class="form-control" required placeholder="e.g. Bangalore">
+          </div>
+          <div class="form-group">
+            <label>Students Placed</label>
+            <input type="number" id="comp-placed" class="form-control" value="0" min="0">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="comp-status" class="form-control">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full mt-3">Save Company</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    (function () {
+      var THEME_CYCLE = ['light', 'dark', 'system']
+      var THEME_ICONS = { light: 'fa-solid fa-moon', dark: 'fa-solid fa-sun', system: 'fa-solid fa-circle-half-stroke' }
+
+      function initTheme () {
+        var toggle = document.getElementById('dash-theme-toggle')
+        if (!toggle) return
+        function getMode () { return document.documentElement.getAttribute('data-theme-mode') || 'light' }
+        function setMode (mode) {
+          var eff = mode === 'system'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : mode
+          document.documentElement.setAttribute('data-theme', eff)
+          document.documentElement.setAttribute('data-theme-mode', mode)
+          try {
+            var raw = localStorage.getItem('skillpilot_state')
+            var s = raw ? JSON.parse(raw) : {}
+            s.theme = mode
+            localStorage.setItem('skillpilot_state', JSON.stringify(s))
+          } catch (e) {}
+          var icon = toggle.querySelector('i')
+          icon.className = THEME_ICONS[mode] || THEME_ICONS.light
+        }
+        setMode(getMode())
+        toggle.addEventListener('click', function () {
+          var idx = THEME_CYCLE.indexOf(getMode())
+          setMode(THEME_CYCLE[(idx + 1) % THEME_CYCLE.length])
+        })
+      }
+
+      function initSidebar () {
+        var toggle = document.getElementById('dash-sidebar-toggle')
+        var sidebar = document.getElementById('dash-sidebar')
+        if (!toggle || !sidebar) return
+        toggle.addEventListener('click', function () {
+          sidebar.classList.toggle('open')
+          document.body.classList.toggle('sidebar-open')
+        })
+        sidebar.querySelectorAll('.dash-sidebar-item').forEach(function (item) {
+          item.addEventListener('click', function () {
+            sidebar.querySelectorAll('.dash-sidebar-item').forEach(function (i) { i.classList.remove('active') })
+            this.classList.add('active')
+            if (window.innerWidth <= 992) sidebar.classList.remove('open')
+          })
+        })
+      }
+
+      function initLogout () {
+        var btn = document.getElementById('dash-logout-btn')
+        if (!btn) return
+        btn.addEventListener('click', async function () {
+          if (typeof SessionManager !== 'undefined') SessionManager.stop()
+          if (typeof AuthService !== 'undefined') await AuthService.logout()
+          else { try { localStorage.removeItem('skillpilot_state') } catch (e) {} }
+          window.location.href = 'login.html'
+        })
+      }
+
+      function loadUser () {
+        try {
+          var raw = localStorage.getItem('skillpilot_state')
+          if (!raw) return
+          var s = JSON.parse(raw)
+          var user = s.user
+          if (!user) return
+          var nameEl = document.getElementById('dash-user-name')
+          if (nameEl) nameEl.textContent = user.name || 'Admin'
+          var roleEl = document.getElementById('dash-user-role')
+          if (roleEl) roleEl.textContent = user.role === 'admin' ? 'Administrator' : user.role === 'recruiter' ? 'Recruiter' : 'Staff'
+          var avatar = document.getElementById('dash-avatar')
+          if (avatar) {
+            var parts = (user.name || 'AD').split(' ')
+            avatar.textContent = (parts[0] ? parts[0][0] : 'A') + (parts[1] ? parts[1][0] : 'D')
+          }
+        } catch (e) {}
+      }
+
+      initTheme()
+      initSidebar()
+      initLogout()
+      loadUser()
+    })()
+  </script>
+</body>
+</html>

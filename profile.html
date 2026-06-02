@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Profile Intelligence Hub</title>
+  <meta name="description" content="Central data management layer for SkillPilot AI. Every module reads from Profile — the single source of truth.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/profile.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <nav class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <div class="dash-logo"><i class="fa-solid fa-brain dash-logo-icon"></i><span class="dash-logo-text">SkillPilot AI</span></div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+        <div class="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Aryan Sharma</span><span class="dash-user-role" id="dash-user-role">Student</span></div>
+          <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-layout">
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="profile.html" class="dash-sidebar-item active" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Profile Intelligence Hub</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Single source of truth for all SkillPilot AI modules. Every score, recommendation, and prediction feeds from this data.</p>
+        </div>
+        <div class="dash-header-actions">
+          <div class="pr-export-group">
+            <button class="pr-export-btn" id="export-json" title="Export JSON"><i class="fa-solid fa-file-code"></i> JSON</button>
+            <button class="pr-export-btn" id="export-md" title="Export Markdown"><i class="fa-solid fa-file-lines"></i> MD</button>
+            <button class="pr-export-btn" id="export-pdf" title="Export PDF"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skeletons -->
+      <div data-skel style="display:none">
+        <div class="pr-layout">
+          <div class="pr-sidebar">
+            <div class="skeleton-card" style="height:320px"></div>
+            <div class="skeleton-card" style="height:200px"></div>
+          </div>
+          <div class="pr-content">
+            <div class="skeleton-card" style="height:160px"></div>
+            <div class="skeleton-card" style="height:300px"></div>
+            <div class="skeleton-card" style="height:250px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pr-layout" id="pr-root" style="display:none">
+        <!-- ===== SIDEBAR ===== -->
+        <div class="pr-sidebar">
+          <div class="pr-profile-card" id="pr-profile-card">
+            <div class="pr-avatar" id="pr-avatar">AS</div>
+            <div class="pr-name" id="pr-name">Aryan Sharma</div>
+            <div class="pr-roll" id="pr-roll">AU24BCA045</div>
+            <div class="pr-bio" id="pr-bio">BCA student passionate about AI and full-stack development.</div>
+            <div class="pr-contact" id="pr-contact"></div>
+          </div>
+
+          <div class="pr-strength-card" id="pr-strength-card">
+            <div class="pr-strength-header">
+              <span class="pr-strength-title">Profile Strength</span>
+              <span class="pr-strength-value" id="pr-strength-val">0%</span>
+            </div>
+            <div class="pr-strength-conf" id="pr-strength-conf">Confidence: Low</div>
+            <div class="pr-strength-bar"><div class="pr-strength-fill" id="pr-strength-fill" style="width:0%"></div></div>
+            <div class="pr-strength-sections" id="pr-strength-sections"></div>
+          </div>
+        </div>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <div class="pr-content">
+          <!-- Insights -->
+          <div class="pr-insights-row" id="pr-insights"></div>
+
+          <!-- Skills Matrix -->
+          <div class="pr-section" id="pr-skills-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-solid fa-code"></i> Skills Matrix</h2>
+              <span class="pr-section-actions" id="pr-skills-count"></span>
+            </div>
+            <div class="pr-skills-grid" id="pr-skills-grid"></div>
+          </div>
+
+          <!-- Projects -->
+          <div class="pr-section" id="pr-projects-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-solid fa-diagram-project"></i> Projects</h2>
+              <div class="pr-section-actions">
+                <span id="pr-projects-count" style="font-size:var(--text-xs);color:var(--text-3)"></span>
+                <button class="dash-export-btn" id="add-project-btn" style="padding:4px 12px;font-size:var(--text-xs)"><i class="fa-solid fa-plus"></i> Add</button>
+              </div>
+            </div>
+            <div class="pr-projects-grid" id="pr-projects-grid"></div>
+          </div>
+
+          <!-- Certifications -->
+          <div class="pr-section" id="pr-certs-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-solid fa-certificate"></i> Certifications</h2>
+              <div class="pr-section-actions">
+                <span id="pr-certs-count" style="font-size:var(--text-xs);color:var(--text-3)"></span>
+                <button class="dash-export-btn" id="add-cert-btn" style="padding:4px 12px;font-size:var(--text-xs)"><i class="fa-solid fa-plus"></i> Add</button>
+              </div>
+            </div>
+            <div class="pr-certs-grid" id="pr-certs-grid"></div>
+          </div>
+
+          <!-- Internships -->
+          <div class="pr-section" id="pr-internships-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-solid fa-briefcase"></i> Internships</h2>
+              <div class="pr-section-actions">
+                <span id="pr-interns-count" style="font-size:var(--text-xs);color:var(--text-3)"></span>
+                <button class="dash-export-btn" id="add-intern-btn" style="padding:4px 12px;font-size:var(--text-xs)"><i class="fa-solid fa-plus"></i> Add</button>
+              </div>
+            </div>
+            <div class="pr-internships-grid" id="pr-internships-grid"></div>
+          </div>
+
+          <!-- GitHub -->
+          <div class="pr-section" id="pr-github-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-brands fa-github"></i> GitHub Integration</h2>
+              <span class="pr-section-actions" id="pr-github-status"></span>
+            </div>
+            <div id="pr-github-content"></div>
+          </div>
+
+          <!-- LinkedIn -->
+          <div class="pr-section" id="pr-linkedin-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-brands fa-linkedin"></i> LinkedIn</h2>
+              <span class="pr-section-actions" id="pr-linkedin-status"></span>
+            </div>
+            <div id="pr-linkedin-content"></div>
+          </div>
+
+          <!-- Achievements -->
+          <div class="pr-section" id="pr-achievements-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-solid fa-trophy"></i> Achievements</h2>
+              <span class="pr-section-actions" id="pr-badges-count"></span>
+            </div>
+            <div class="pr-badge-grid" id="pr-badge-grid"></div>
+          </div>
+
+          <!-- Learning History -->
+          <div class="pr-section" id="pr-timeline-section">
+            <div class="pr-section-header">
+              <h2 class="pr-section-title"><i class="fa-solid fa-timeline"></i> Learning History</h2>
+              <span class="pr-section-actions" id="pr-timeline-count"></span>
+            </div>
+            <div class="pr-timeline" id="pr-timeline"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Project Modal -->
+  <div class="pr-modal-overlay" id="project-modal">
+    <div class="pr-modal">
+      <div class="pr-modal-header">
+        <h3 class="pr-modal-title" id="project-modal-title">Add Project</h3>
+        <button class="pr-modal-close" data-close="project-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="pr-modal-body">
+        <div class="pr-field"><label>Project Name</label><input type="text" id="proj-name"></div>
+        <div class="pr-field"><label>Description</label><textarea id="proj-desc" rows="3"></textarea></div>
+        <div class="pr-field"><label>Technologies (comma separated)</label><input type="text" id="proj-tech" placeholder="React, Node.js, MongoDB"></div>
+        <div class="pr-field"><label>GitHub URL</label><input type="url" id="proj-url" placeholder="https://github.com/..."></div>
+        <div class="pr-field"><label>Demo URL</label><input type="url" id="proj-demo" placeholder="https://..."></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
+          <div class="pr-field"><label>Complexity Score (0-100)</label><input type="number" id="proj-complexity" min="0" max="100" value="50"></div>
+          <div class="pr-field"><label>Impact Score (0-100)</label><input type="number" id="proj-impact" min="0" max="100" value="50"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
+          <div class="pr-field"><label>Year</label><input type="number" id="proj-year" value="2026"></div>
+          <div class="pr-field"><label>Completed</label><select id="proj-completed"><option value="true">Yes</option><option value="false">No</option></select></div>
+        </div>
+      </div>
+      <div class="pr-modal-footer">
+        <button class="dash-export-btn" data-close="project-modal" style="padding:6px 16px">Cancel</button>
+        <button class="dash-export-btn" id="project-save-btn" style="padding:6px 16px;background:var(--primary);color:#fff;border-color:var(--primary)">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Certification Modal -->
+  <div class="pr-modal-overlay" id="cert-modal">
+    <div class="pr-modal">
+      <div class="pr-modal-header">
+        <h3 class="pr-modal-title" id="cert-modal-title">Add Certification</h3>
+        <button class="pr-modal-close" data-close="cert-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="pr-modal-body">
+        <div class="pr-field"><label>Certification Name</label><input type="text" id="cert-name"></div>
+        <div class="pr-field"><label>Issuer</label><input type="text" id="cert-issuer" placeholder="e.g. AWS, Google, Microsoft"></div>
+        <div class="pr-field"><label>Date Earned</label><input type="date" id="cert-date"></div>
+        <div class="pr-field"><label>Credential URL</label><input type="url" id="cert-url" placeholder="https://..."></div>
+        <div class="pr-field"><label>Category</label>
+          <select id="cert-category"><option value="Cloud">Cloud</option><option value="Data Science">Data Science</option><option value="Development">Development</option><option value="AI/ML">AI/ML</option><option value="DevOps">DevOps</option><option value="Database">Database</option><option value="Other">Other</option></select>
+        </div>
+        <div class="pr-field"><label>Skill Mapping (comma separated)</label><input type="text" id="cert-skills" placeholder="AWS, Cloud Computing"></div>
+      </div>
+      <div class="pr-modal-footer">
+        <button class="dash-export-btn" data-close="cert-modal" style="padding:6px 16px">Cancel</button>
+        <button class="dash-export-btn" id="cert-save-btn" style="padding:6px 16px;background:var(--primary);color:#fff;border-color:var(--primary)">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Internship Modal -->
+  <div class="pr-modal-overlay" id="intern-modal">
+    <div class="pr-modal">
+      <div class="pr-modal-header">
+        <h3 class="pr-modal-title" id="intern-modal-title">Add Internship</h3>
+        <button class="pr-modal-close" data-close="intern-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="pr-modal-body">
+        <div class="pr-field"><label>Role</label><input type="text" id="intern-role" placeholder="e.g. Software Development Intern"></div>
+        <div class="pr-field"><label>Company</label><input type="text" id="intern-company"></div>
+        <div class="pr-field"><label>Duration</label><input type="text" id="intern-duration" placeholder="e.g. 3 months, 6 months"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
+          <div class="pr-field"><label>Start Date</label><input type="date" id="intern-start"></div>
+          <div class="pr-field"><label>End Date</label><input type="date" id="intern-end"></div>
+        </div>
+        <div class="pr-field"><label>Technologies (comma separated)</label><input type="text" id="intern-tech" placeholder="React, Node.js, MongoDB"></div>
+        <div class="pr-field"><label>Skills Gained (comma separated)</label><input type="text" id="intern-skills-gained" placeholder="Team Collaboration, React, Node.js"></div>
+        <div class="pr-field"><label>Completed</label><select id="intern-completed"><option value="true">Yes</option><option value="false">No</option></select></div>
+      </div>
+      <div class="pr-modal-footer">
+        <button class="dash-export-btn" data-close="intern-modal" style="padding:6px 16px">Cancel</button>
+        <button class="dash-export-btn" id="intern-save-btn" style="padding:6px 16px;background:var(--primary);color:#fff;border-color:var(--primary)">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/data/career-paths.js"></script>
+  <script src="js/data/companies.js"></script>
+  <script src="js/data/placement-data.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/profile.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/utils/kpi.js"></script>
+  <script src="js/pages/profile.js"></script>
+</body>
+</html>

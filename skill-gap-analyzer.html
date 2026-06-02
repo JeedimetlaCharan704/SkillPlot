@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Skill Gap Analyzer</title>
+  <meta name="description" content="Bridge between your current profile and target career. See exactly what's missing, how long it takes, and what to do next.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/skill-gap.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <nav class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <div class="dash-logo"><i class="fa-solid fa-brain dash-logo-icon"></i><span class="dash-logo-text">SkillPilot AI</span></div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+        <div class="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Aryan Sharma</span><span class="dash-user-role" id="dash-user-role">Student</span></div>
+          <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-layout">
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item active" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Skill Gap Analyzer</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Bridge between your current profile and your target career. Every recommendation is traceable to a gap calculation.</p>
+        </div>
+        <div class="dash-header-actions">
+          <button class="dash-export-btn" id="export-pdf" title="Export PDF report"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          <button class="dash-export-btn" id="export-json" title="Export JSON" style="background:var(--surface);color:var(--text);border-color:var(--border)"><i class="fa-solid fa-code"></i> JSON</button>
+          <button class="dash-export-btn" id="export-md" title="Export Markdown" style="background:var(--surface);color:var(--text);border-color:var(--border)"><i class="fa-solid fa-markdown"></i> MD</button>
+        </div>
+      </div>
+
+      <!-- === CAREER SELECTOR === -->
+      <section class="sg-section" id="section-selector">
+        <div class="sg-selector">
+          <div class="sg-selector-left">
+            <label class="sg-selector-label" for="target-career">Target Career</label>
+            <div class="sg-selector-row">
+              <select class="sg-select" id="target-career"></select>
+              <div class="sg-hours-input">
+                <label class="sg-hours-label" for="hours-per-day">Hrs/Day</label>
+                <input type="number" class="sg-hours-field" id="hours-per-day" value="2" min="1" max="12">
+              </div>
+              <button class="sg-analyze-btn" id="analyze-btn"><i class="fa-solid fa-arrows-left-right"></i> Analyze Gap</button>
+            </div>
+          </div>
+          <div class="sg-selector-right" id="career-preview"></div>
+        </div>
+      </section>
+
+      <!-- === OVERVIEW STATS === -->
+      <section class="sg-section" id="section-overview">
+        <div class="sg-stat-grid" id="sg-stat-grid">
+          <div class="skeleton skeleton-stat" data-skel="stat1"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:25%;height:32px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-stat" data-skel="stat2"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:25%;height:32px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-stat" data-skel="stat3"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:25%;height:32px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-stat" data-skel="stat4"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:25%;height:32px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+        </div>
+      </section>
+
+      <!-- === SKILL COMPARISON === -->
+      <section class="sg-section" id="section-comparison">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Skill Comparison</h2>
+          <div class="dash-section-actions">
+            <span class="sg-filter-chips" id="sg-filter-chips">
+              <button class="sg-chip active" data-filter="all">All</button>
+              <button class="sg-chip" data-filter="missing">Missing</button>
+              <button class="sg-chip" data-filter="partial">Partial</button>
+              <button class="sg-chip" data-filter="acquired">Acquired</button>
+            </span>
+          </div>
+        </div>
+        <div class="sg-table-wrap">
+          <table class="sg-table" id="sg-table">
+            <thead><tr><th>Skill</th><th>Category</th><th>Current</th><th>Required</th><th>Gap</th><th>Priority</th><th>Hours</th><th>Impact</th></tr></thead>
+            <tbody id="sg-table-body">
+              <tr class="skeleton skeleton-row" data-skel="row"><td colspan="8"><div class="skeleton skeleton-text" style="width:100%;height:32px"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- === PRIORITY MATRIX === -->
+      <div class="sg-two-col">
+        <section class="sg-section" id="section-priority">
+          <div class="dash-section-header"><h2 class="dash-section-title">Priority Matrix</h2></div>
+          <div class="sg-priority-grid" id="sg-priority-grid">
+            <div class="skeleton skeleton-card" data-skel="pri"><div class="skeleton skeleton-title" style="width:30%"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          </div>
+        </section>
+        <section class="sg-section" id="section-timeline">
+          <div class="dash-section-header"><h2 class="dash-section-title">Learning Timeline</h2></div>
+          <div class="sg-timeline" id="sg-timeline">
+            <div class="skeleton skeleton-card" data-skel="tim"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- === VISUALIZATIONS === -->
+      <section class="sg-section" id="section-charts">
+        <div class="dash-section-header"><h2 class="dash-section-title">Visualizations</h2></div>
+        <div class="sg-chart-grid">
+          <div class="chart-card"><div class="chart-card-header"><h3>Skill Radar</h3></div><div class="chart-wrapper" style="height:220px"><canvas id="chart-radar"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h3>Gap Severity</h3></div><div class="chart-wrapper" style="height:220px"><canvas id="chart-gap"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h3>Readiness Gauge</h3></div><div class="chart-wrapper" id="gauge-container" style="height:220px"><canvas id="chart-gauge"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h3>Learning Timeline</h3></div><div class="chart-wrapper" style="height:220px"><canvas id="chart-timeline"></canvas></div></div>
+        </div>
+      </section>
+
+      <!-- === ACTION PLAN === -->
+      <section class="sg-section" id="section-actions">
+        <div class="dash-section-header"><h2 class="dash-section-title">Action Plan</h2><span class="dash-section-badge" id="action-count">10 actions</span></div>
+        <div class="sg-action-grid" id="sg-action-grid">
+          <div class="skeleton skeleton-card" data-skel="act"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+        </div>
+      </section>
+
+      <!-- === WHAT IF MODE === -->
+      <section class="sg-section" id="section-whatif">
+        <div class="dash-section-header"><h2 class="dash-section-title">What If Mode</h2><span class="dash-section-badge" id="whatif-badge">Simulate skill changes</span></div>
+        <div class="sg-whatif" id="sg-whatif">
+          <div class="sg-whatif-form">
+            <div class="sg-whatif-field">
+              <label class="sg-whatif-label" for="whatif-skill">Skill</label>
+              <input type="text" class="sg-whatif-input" id="whatif-skill" list="whatif-skills-list" placeholder="e.g. Python">
+              <datalist id="whatif-skills-list"></datalist>
+            </div>
+            <div class="sg-whatif-field">
+              <label class="sg-whatif-label" for="whatif-level">Level (0–100)</label>
+              <input type="range" class="sg-whatif-range" id="whatif-level" min="0" max="100" value="70">
+              <span class="sg-whatif-range-val" id="whatif-level-val">70</span>
+            </div>
+            <button class="sg-whatif-btn" id="whatif-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Simulate</button>
+          </div>
+          <div class="sg-whatif-results" id="sg-whatif-results">
+            <p class="sg-whatif-placeholder">Enter a skill and level, then click Simulate to see the impact on your scores.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- === SUGGESTIONS & STEPS === -->
+      <section class="sg-section" id="section-suggestions">
+        <div class="dash-section-header"><h2 class="dash-section-title">Suggestions</h2><button class="dash-section-action" id="toggle-steps">Show Steps</button></div>
+        <div class="sg-suggestions" id="sg-suggestions"></div>
+        <div class="sg-steps hidden" id="sg-steps"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/data/career-paths.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/skill.service.js"></script>
+  <script src="js/services/career.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/utils/kpi.js"></script>
+  <script src="js/pages/skill-gap.js"></script>
+</body>
+</html>

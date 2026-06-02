@@ -1,0 +1,49 @@
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+.project
+.classpath
+.settings/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+# Build / output
+dist/
+build/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel/
+
+# Temp
+tmp/
+temp/
+*.tmp
+
+# Backend
+backend/logs/
+backend/uploads/
+
+# Coverage
+coverage/
+lcov.info

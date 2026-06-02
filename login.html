@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — AI-Powered Career Intelligence</title>
+  <meta name="description" content="AI-powered career intelligence platform. Analyze resumes, predict placements, build portfolios, and get personalized career recommendations.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#4F46E5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta property="og:title" content="SkillPilot AI — Career Intelligence Platform">
+  <meta property="og:description" content="Analyze resumes, predict placements, build portfolios, and get AI-powered career recommendations.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://skillpilot.vercel.app">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/login.css">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+</head>
+<body class="login-body">
+  <!-- Theme Toggle -->
+  <button class="login-theme-toggle" id="theme-toggle" aria-label="Toggle theme (light/dark/system)" title="Theme: light">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+
+  <!-- Main Login Wrapper -->
+  <div class="login-wrapper">
+    <!-- Left: Branding -->
+    <div class="login-branding" aria-hidden="true">
+      <div class="login-branding-content">
+        <div class="brand-badge">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+          AI-Powered Career Intelligence
+        </div>
+
+        <div class="brand-logo">
+          <div class="brand-logo-icon">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+          <span class="brand-logo-text">SkillPilot</span>
+        </div>
+
+        <h1 class="brand-tagline">Your Career,<br>Intelligently Guided.</h1>
+
+        <p class="brand-subtitle">
+          Analyze your resume, predict placement chances, build a portfolio, and get AI-powered career recommendations tailored to your skills.
+        </p>
+
+        <!-- Floating Feature Cards -->
+        <div class="floating-cards">
+          <div class="floating-card floating-1">
+            <div class="floating-card-icon"><i class="fa-solid fa-file-lines"></i></div>
+            <div class="floating-card-content">
+              <h4>Intelligent Resume Analysis</h4>
+              <p>ATS scoring, keyword matching, skill gap detection</p>
+            </div>
+          </div>
+          <div class="floating-card floating-2">
+            <div class="floating-card-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="floating-card-content">
+              <h4>Placement Prediction</h4>
+              <p>Probability scoring, company matching, salary estimation</p>
+            </div>
+          </div>
+          <div class="floating-card floating-3">
+            <div class="floating-card-icon"><i class="fa-solid fa-compass"></i></div>
+            <div class="floating-card-content">
+              <h4>Career Recommendation Engine</h4>
+              <p>Skill-based matching across 10+ career paths</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="brand-stats">
+          <div class="brand-stat">
+            <span class="brand-stat-value" data-target="10">10K+</span>
+            <span class="brand-stat-label">Students Onboarded</span>
+          </div>
+          <div class="brand-stat">
+            <span class="brand-stat-value">500+</span>
+            <span class="brand-stat-label">Partner Companies</span>
+          </div>
+          <div class="brand-stat">
+            <span class="brand-stat-value">95%</span>
+            <span class="brand-stat-label">Career Readiness</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Login Panel -->
+    <div class="login-panel">
+      <div class="login-card">
+        <div class="login-card-header">
+          <div class="login-card-logo">
+            <i class="fa-solid fa-right-to-bracket"></i>
+          </div>
+          <h2 class="login-card-title">Welcome Back</h2>
+          <p class="login-card-subtitle">Sign in to continue your career journey</p>
+        </div>
+
+        <!-- Role Tabs -->
+        <div class="role-tabs" role="tablist" aria-label="Select your role">
+          <button class="role-tab active" data-role="student" role="tab" aria-selected="true" tabindex="0">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Student</span>
+          </button>
+          <button class="role-tab" data-role="mentor" role="tab" aria-selected="false" tabindex="-1">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <span>Mentor</span>
+          </button>
+          <button class="role-tab" data-role="recruiter" role="tab" aria-selected="false" tabindex="-1">
+            <i class="fa-solid fa-building"></i>
+            <span>Recruiter</span>
+          </button>
+          <button class="role-tab" data-role="admin" role="tab" aria-selected="false" tabindex="-1">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Admin</span>
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <form class="login-form visible" id="login-form" autocomplete="off" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="login-email">
+              Email Address
+              <a href="/reset-password.html" tabindex="0">Forgot Password?</a>
+            </label>
+            <input type="email" id="login-email" class="form-input" placeholder="you@example.com" value="" required autocomplete="email" aria-required="true">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <input type="password" id="login-password" class="form-input" placeholder="Enter your password" value="" required autocomplete="current-password" aria-required="true">
+          </div>
+          <button type="submit" class="login-submit-btn" id="login-submit-btn">
+            <span class="btn-text">Sign In</span>
+          </button>
+          <p class="login-footer-text" style="margin-top:var(--space-4);text-align:center;">
+            Don't have an account? <a href="/register.html" tabindex="0">Create one</a>
+          </p>
+          <div id="login-skeleton" style="display:none"></div>
+        </form>
+
+        <!-- Divider -->
+        <div class="login-divider"><span>Quick Access</span></div>
+
+        <!-- Demo Account Cards -->
+        <p class="demo-section-label">Try with a demo account</p>
+        <div class="demo-cards">
+          <div class="demo-card" data-role="student" tabindex="0" role="button" aria-label="Login as student demo">
+            <div class="demo-card-avatar student">AS</div>
+            <span class="demo-card-name">Aryan S.</span>
+            <span class="demo-card-role">Student</span>
+          </div>
+          <div class="demo-card" data-role="mentor" tabindex="0" role="button" aria-label="Login as mentor demo">
+            <div class="demo-card-avatar mentor">PP</div>
+            <span class="demo-card-name">Dr. Priya</span>
+            <span class="demo-card-role">Mentor</span>
+          </div>
+          <div class="demo-card" data-role="recruiter" tabindex="0" role="button" aria-label="Login as recruiter demo">
+            <div class="demo-card-avatar recruiter">RV</div>
+            <span class="demo-card-name">Rahul V.</span>
+            <span class="demo-card-role">Recruiter</span>
+          </div>
+          <div class="demo-card" data-role="admin" tabindex="0" role="button" aria-label="Login as admin demo">
+            <div class="demo-card-avatar admin">AU</div>
+            <span class="demo-card-name">Admin</span>
+            <span class="demo-card-role">Admin</span>
+          </div>
+        </div>
+
+        <!-- Social Login -->
+        <p class="demo-section-label" style="margin-top: var(--space-4);">Continue with</p>
+        <div class="social-login">
+          <button class="social-btn" data-provider="google" aria-label="Sign in with Google">
+            <i class="fa-brands fa-google"></i>
+          </button>
+          <button class="social-btn" data-provider="github" aria-label="Sign in with GitHub">
+            <i class="fa-brands fa-github"></i>
+          </button>
+          <button class="social-btn" data-provider="linkedin" aria-label="Sign in with LinkedIn">
+            <i class="fa-brands fa-linkedin-in"></i>
+          </button>
+        </div>
+        <p class="login-footer-text">
+          By signing in, you agree to our
+          <a href="#" tabindex="-1">Terms of Service</a> and
+          <a href="#" tabindex="-1">Privacy Policy</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Modal -->
+  <div class="modal-backdrop hidden onboarding-modal" id="onboarding-modal">
+    <div class="modal">
+      <div class="modal-body">
+        <div class="onboarding-header">
+          <h2>Welcome to SkillPilot AI</h2>
+          <p>Choose how you'd like to get started</p>
+        </div>
+        <div class="onboarding-options">
+          <div class="onboarding-option" id="onboard-demo" tabindex="0" role="button">
+            <div class="onboarding-option-icon demo">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <h3>Continue with Demo Profile</h3>
+            <p>Explore all features immediately with a pre-configured profile.</p>
+            <ul class="onboarding-features">
+              <li><i class="fa-solid fa-check"></i> 16 skills with proficiency levels</li>
+              <li><i class="fa-solid fa-check"></i> 5 projects with descriptions</li>
+              <li><i class="fa-solid fa-check"></i> 3 certifications</li>
+              <li><i class="fa-solid fa-check"></i> Resume already analyzed</li>
+              <li><i class="fa-solid fa-check"></i> Placement prediction ready</li>
+            </ul>
+          </div>
+          <div class="onboarding-option" id="onboard-create" tabindex="0" role="button">
+            <div class="onboarding-option-icon create">
+              <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h3>Create My Profile</h3>
+            <p>Start fresh and build your profile from scratch.</p>
+            <ul class="onboarding-features">
+              <li><i class="fa-solid fa-check"></i> Add your skills and experience</li>
+              <li><i class="fa-solid fa-check"></i> Upload and analyze your resume</li>
+              <li><i class="fa-solid fa-check"></i> Get personalized recommendations</li>
+              <li><i class="fa-solid fa-check"></i> Track your learning progress</li>
+              <li><i class="fa-solid fa-check"></i> Build your portfolio</li>
+            </ul>
+          </div>
+        </div>
+        <p class="onboarding-footer">You can switch to a different profile anytime from Settings.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/pages/login.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {})
+    }
+  </script>
+</body>
+</html>

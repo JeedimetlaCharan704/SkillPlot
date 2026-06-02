@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — GitHub Analytics</title>
+  <meta name="description" content="Transform your GitHub profile into a measurable career signal with project quality scoring, developer maturity analysis, and recruiter-ready insights.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/github-analytics.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <nav class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <div class="dash-logo"><i class="fa-solid fa-brain dash-logo-icon"></i><span class="dash-logo-text">SkillPilot AI</span></div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+        <div class="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Aryan Sharma</span><span class="dash-user-role" id="dash-user-role">Student</span></div>
+          <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-layout">
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item active" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">GitHub Analytics</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Transform your GitHub profile into a measurable career signal. Project quality, tech diversity, and developer maturity — all in one place.</p>
+        </div>
+        <div class="dash-header-actions">
+          <div class="gh-export-group" id="gh-export-group" style="display:none">
+            <button class="pr-export-btn" id="export-json"><i class="fa-solid fa-file-code"></i> JSON</button>
+            <button class="pr-export-btn" id="export-md"><i class="fa-solid fa-file-lines"></i> MD</button>
+            <button class="pr-export-btn" id="export-pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Row -->
+      <div class="gh-input-row">
+        <div class="gh-input-group">
+          <span class="gh-at">@</span>
+          <input type="text" id="gh-username" placeholder="GitHub username" value="aryan-dev">
+        </div>
+        <div class="gh-mode-group" id="gh-mode-group">
+          <button class="gh-mode-btn active" data-mode="demo">Demo</button>
+          <button class="gh-mode-btn" data-mode="api">Live API</button>
+        </div>
+        <button class="gh-analyze-btn" id="gh-analyze-btn"><i class="fa-solid fa-magnifying-glass-chart"></i> Analyze</button>
+      </div>
+
+      <!-- Skeletons -->
+      <div data-skel style="display:none">
+        <div class="gh-profile-card skeleton-card" style="height:100px"></div>
+        <div class="gh-stats-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-3)">
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+        </div>
+        <div class="gh-charts-row">
+          <div class="skeleton-card" style="height:300px"></div>
+          <div class="skeleton-card" style="height:300px"></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="gh-results" style="display:none">
+        <!-- Mode Badge -->
+        <div style="margin-bottom:var(--space-3)" id="gh-mode-badge-container"></div>
+
+        <!-- Profile Card -->
+        <div class="gh-profile-card" id="gh-profile-card" style="display:none"></div>
+
+        <!-- Stats Grid -->
+        <div class="gh-stats-grid" id="gh-stats-grid"></div>
+
+        <!-- Charts Row -->
+        <div class="gh-charts-row">
+          <div class="gh-chart-card">
+            <div class="gh-chart-title">Language Distribution <span>Top languages by bytes</span></div>
+            <div style="position:relative;height:240px"><canvas id="chart-lang-doughnut"></canvas></div>
+          </div>
+          <div class="gh-chart-card">
+            <div class="gh-chart-title">Project Quality <span>Scores by repository</span></div>
+            <div style="position:relative;height:240px"><canvas id="chart-quality-bar"></canvas></div>
+          </div>
+        </div>
+
+        <div class="gh-charts-row">
+          <div class="gh-chart-card">
+            <div class="gh-chart-title">Technology Categories <span>Frontend, Backend, Data Science, Cloud, DevOps</span></div>
+            <div style="position:relative;height:240px"><canvas id="chart-tech-radar"></canvas></div>
+          </div>
+          <div class="gh-chart-card">
+            <div class="gh-chart-title">Activity Timeline <span>Monthly contributions</span></div>
+            <div style="position:relative;height:240px"><canvas id="chart-activity-line"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Project Quality Section -->
+        <div class="gh-section" id="gh-quality-section">
+          <div class="gh-section-header">
+            <h2 class="gh-section-title"><i class="fa-solid fa-gem"></i> Project Quality Analysis</h2>
+            <span id="gh-quality-avg" style="font-size:var(--text-xs);color:var(--text-3)"></span>
+          </div>
+          <div class="gh-quality-grid" id="gh-quality-grid"></div>
+        </div>
+
+        <!-- Developer Maturity -->
+        <div class="gh-section" id="gh-maturity-section">
+          <div class="gh-section-header">
+            <h2 class="gh-section-title"><i class="fa-solid fa-chart-simple"></i> Developer Maturity Score</h2>
+            <span id="gh-maturity-value" style="font-size:var(--text-md);font-weight:var(--weight-bold);color:var(--primary)"></span>
+          </div>
+          <div class="gh-maturity-grid" id="gh-maturity-grid"></div>
+        </div>
+
+        <!-- Tech Categories -->
+        <div class="gh-section" id="gh-categories-section">
+          <div class="gh-section-header">
+            <h2 class="gh-section-title"><i class="fa-solid fa-layer-group"></i> Technology Categories</h2>
+            <span id="gh-cat-count" style="font-size:var(--text-xs);color:var(--text-3)"></span>
+          </div>
+          <div class="gh-cat-grid" id="gh-cat-grid"></div>
+        </div>
+
+        <!-- Recruiter View -->
+        <div class="gh-section" id="gh-recruiter-section">
+          <div class="gh-section-header">
+            <h2 class="gh-section-title"><i class="fa-solid fa-user-tie"></i> Recruiter View</h2>
+          </div>
+          <div class="gh-recruiter-grid" id="gh-recruiter-grid"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/data/career-paths.js"></script>
+  <script src="js/data/companies.js"></script>
+  <script src="js/data/placement-data.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/github-analytics.service.js"></script>
+  <script src="js/services/profile.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/utils/kpi.js"></script>
+  <script src="js/pages/github-analytics.js"></script>
+</body>
+</html>

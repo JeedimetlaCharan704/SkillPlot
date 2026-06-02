@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Dashboard</title>
+  <meta name="description" content="AI-powered career intelligence dashboard. Real-time KPI scores, skill analytics, placement prediction, and improvement recommendations.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <!-- Navbar -->
+  <nav class="dash-nav" id="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="dash-logo">
+          <i class="fa-solid fa-brain dash-logo-icon"></i>
+          <span class="dash-logo-text">SkillPilot AI</span>
+        </div>
+      </div>
+      <div class="dash-nav-right">
+        <span class="dash-streak" id="dash-streak-badge" title="Learning streak">
+          <i class="fa-solid fa-fire"></i> <span id="dash-streak-count">0</span>
+        </span>
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <div class="dash-user-badge" id="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info">
+            <span class="dash-user-name" id="dash-user-name">Aryan Sharma</span>
+            <span class="dash-user-role" id="dash-user-role">Student</span>
+          </div>
+          <button type="button" class="dash-logout-btn" id="dash-logout-btn" title="Sign out">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="dash-layout">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item active" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+        <a href="admin.html" class="dash-sidebar-item" data-page="admin.html" id="sidebar-admin-link"><i class="fa-solid fa-shield-halved"></i><span>Admin</span></a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main" id="dash-main">
+      <!-- Page Header -->
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Dashboard</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Welcome back, Aryan. Here's your career snapshot.</p>
+        </div>
+        <div class="dash-header-actions">
+          <button class="dash-export-btn" id="dash-export-btn" title="Export career report as PDF">
+            <i class="fa-solid fa-file-export"></i> Export Report
+          </button>
+          <span class="dash-last-refresh" id="dash-last-refresh"><i class="fa-regular fa-clock"></i> Just now</span>
+          <button class="dash-refresh-btn" id="dash-refresh-btn" title="Refresh dashboard">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- === SECTION 1: TOP KPI CARDS === -->
+      <section class="dash-section" id="section-kpi">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Performance Overview</h2>
+        </div>
+        <div class="kpi-grid" id="kpi-grid">
+          <div class="skeleton skeleton-kpi-card" data-skel="kpi1"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          <div class="skeleton skeleton-kpi-card" data-skel="kpi2"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          <div class="skeleton skeleton-kpi-card" data-skel="kpi3"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          <div class="skeleton skeleton-kpi-card" data-skel="kpi4"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:30%;height:36px;margin:12px 0"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+        </div>
+      </section>
+
+      <!-- === SECTION 2: ANALYTICS ZONE === -->
+      <section class="dash-section" id="section-analytics">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Analytics</h2>
+          <div class="dash-chart-controls">
+            <span class="chart-period-label" id="chart-period-label">This Week</span>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card" id="chart-radar-container">
+            <div class="chart-card-header"><h3>Skill Radar</h3><i class="fa-solid fa-circle-info chart-info" title="Radar of your top skill categories"></i></div>
+            <div class="chart-wrapper"><canvas id="chart-radar"></canvas></div>
+            <div class="skeleton skeleton-chart-fill" data-skel="radar"></div>
+          </div>
+          <div class="chart-card" id="chart-bar-container">
+            <div class="chart-card-header"><h3>Weekly Growth</h3><i class="fa-solid fa-circle-info chart-info" title="Daily activity breakdown"></i></div>
+            <div class="chart-wrapper"><canvas id="chart-bar"></canvas></div>
+            <div class="skeleton skeleton-chart-fill" data-skel="bar"></div>
+          </div>
+          <div class="chart-card" id="chart-doughnut-container">
+            <div class="chart-card-header"><h3>Skill Distribution</h3><i class="fa-solid fa-circle-info chart-info" title="Skill category breakdown"></i></div>
+            <div class="chart-wrapper"><canvas id="chart-doughnut"></canvas></div>
+            <div class="skeleton skeleton-chart-fill" data-skel="doughnut"></div>
+          </div>
+          <div class="chart-card" id="chart-gauge-container">
+            <div class="chart-card-header"><h3>Placement Probability</h3><i class="fa-solid fa-circle-info chart-info" title="Overall placement likelihood"></i></div>
+            <div class="chart-wrapper"><canvas id="chart-gauge"></canvas></div>
+            <div class="skeleton skeleton-chart-fill" data-skel="gauge"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- === SECTION 3: CAREER INSIGHTS === -->
+      <section class="dash-section" id="section-career">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Career Recommendations</h2>
+          <a href="#" class="dash-section-action" id="career-view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="career-grid" id="career-grid">
+          <div class="skeleton skeleton-career-card" data-skel="career1"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div><div class="skeleton skeleton-text" style="width:30%"></div></div>
+          <div class="skeleton skeleton-career-card" data-skel="career2"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div><div class="skeleton skeleton-text" style="width:30%"></div></div>
+          <div class="skeleton skeleton-career-card" data-skel="career3"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div><div class="skeleton skeleton-text" style="width:30%"></div></div>
+        </div>
+      </section>
+
+      <!-- === SECTION 4: RECRUITER VIEW === -->
+      <section class="dash-section" id="section-recruiter">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Recruiter View</h2>
+          <span class="dash-section-badge" id="recruiter-overall-badge">Overall: --</span>
+        </div>
+        <div class="recruiter-grid" id="recruiter-grid">
+          <div class="skeleton skeleton-recruiter-card" data-skel="rec1"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:20%;height:28px"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+          <div class="skeleton skeleton-recruiter-card" data-skel="rec2"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:20%;height:28px"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+          <div class="skeleton skeleton-recruiter-card" data-skel="rec3"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:20%;height:28px"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+          <div class="skeleton skeleton-recruiter-card" data-skel="rec4"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:20%;height:28px"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+          <div class="skeleton skeleton-recruiter-card" data-skel="rec5"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:20%;height:28px"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+          <div class="skeleton skeleton-recruiter-card" data-skel="rec6"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:20%;height:28px"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+        </div>
+      </section>
+
+      <!-- === SECTION 5: ACHIEVEMENTS === -->
+      <section class="dash-section" id="section-achievements">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Achievements</h2>
+        </div>
+        <div class="achievement-row" id="achievement-row">
+          <div class="skeleton skeleton-achievement-card" data-skel="ach1"><div class="skeleton skeleton-icon" style="width:48px;height:48px;border-radius:50%"></div><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-achievement-card" data-skel="ach2"><div class="skeleton skeleton-icon" style="width:48px;height:48px;border-radius:50%"></div><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-achievement-card" data-skel="ach3"><div class="skeleton skeleton-icon" style="width:48px;height:48px;border-radius:50%"></div><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+        </div>
+      </section>
+
+      <!-- === SECTION 6: IMPROVEMENT ENGINE === -->
+      <section class="dash-section" id="section-improve">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Improvement Engine</h2>
+          <span class="dash-section-badge" id="improve-potential">+0 potential</span>
+        </div>
+        <div class="improve-grid" id="improve-grid">
+          <div class="skeleton skeleton-improve-card" data-skel="imp1"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:80%"></div><div class="skeleton skeleton-text" style="width:20%"></div></div>
+          <div class="skeleton skeleton-improve-card" data-skel="imp2"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:80%"></div><div class="skeleton skeleton-text" style="width:20%"></div></div>
+          <div class="skeleton skeleton-improve-card" data-skel="imp3"><div class="skeleton skeleton-title" style="width:50%"></div><div class="skeleton skeleton-text" style="width:80%"></div><div class="skeleton skeleton-text" style="width:20%"></div></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- KPI Detail Drawer -->
+  <div class="drawer-backdrop hidden" id="kpi-drawer-backdrop"></div>
+  <div class="drawer" id="kpi-drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title" id="drawer-title">Score Details</h3>
+      <button class="drawer-close" id="drawer-close" aria-label="Close drawer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/career-paths.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/data/badges.js"></script>
+  <script src="js/data/companies.js"></script>
+  <script src="js/data/placement-data.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/analytics.service.js"></script>
+  <script src="js/services/career.service.js"></script>
+  <script src="js/services/skill.service.js"></script>
+  <script src="js/services/resume.service.js"></script>
+  <script src="js/services/placement.service.js"></script>
+  <script src="js/services/recruiter.service.js"></script>
+  <script src="js/services/github.service.js"></script>
+  <script src="js/services/portfolio.service.js"></script>
+  <script src="js/services/roadmap.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/utils/kpi.js"></script>
+  <script src="js/pages/dashboard.js"></script>
+  <script>
+    (function () {
+      var role = Store ? Store.get('userRole') : null
+      var link = document.getElementById('sidebar-admin-link')
+      if (link && role !== 'admin' && role !== 'mentor' && role !== 'recruiter') {
+        link.style.display = 'none'
+      }
+    })()
+  </script>
+</body>
+</html>

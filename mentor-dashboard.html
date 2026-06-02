@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Mentor Dashboard</title>
+  <meta name="description" content="Manage your cohort. Track student readiness, detect at-risk students, and generate bulk recommendations.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_state')
+      try {
+        var s = saved ? JSON.parse(saved) : {}
+        var mode = s.theme || 'system'
+        var theme = mode === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : mode
+        document.documentElement.setAttribute('data-theme', theme)
+        document.documentElement.setAttribute('data-theme-mode', mode)
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light')
+        document.documentElement.setAttribute('data-theme-mode', 'light')
+      }
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/mentor-dashboard.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <nav class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <div class="dash-logo"><i class="fa-solid fa-brain dash-logo-icon"></i><span class="dash-logo-text">SkillPilot AI</span></div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+        <div class="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">MN</div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Mentor</span><span class="dash-user-role" id="dash-user-role">Mentor</span></div>
+          <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-layout">
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="mentor-dashboard.html" class="dash-sidebar-item active" data-page="mentor-dashboard.html"><i class="fa-solid fa-users"></i><span>Mentor Dashboard</span></a>
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Student Dashboard</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Mentor Dashboard</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Manage your cohort. Track readiness, detect at-risk students, and generate bulk recommendations.</p>
+        </div>
+        <div class="dash-header-actions">
+          <div style="display:flex;gap:var(--space-2)" id="md-export-group">
+            <button class="pr-export-btn" id="export-json"><i class="fa-solid fa-file-code"></i> JSON</button>
+            <button class="pr-export-btn" id="export-md"><i class="fa-solid fa-file-lines"></i> MD</button>
+            <button class="pr-export-btn" id="export-csv"><i class="fa-solid fa-file-csv"></i> CSV</button>
+            <button class="pr-export-btn" id="export-pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skeletons -->
+      <div data-skel style="display:none">
+        <div class="md-overview" style="display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-3)">
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+          <div class="skeleton-card" style="height:80px"></div>
+        </div>
+        <div class="skeleton-card" style="height:300px"></div>
+      </div>
+
+      <div id="md-results">
+        <!-- Overview -->
+        <div class="md-overview" id="md-overview"></div>
+
+        <!-- Student Table -->
+        <div class="md-table-wrap" id="md-table-wrap">
+          <div class="md-table-header">
+            <h2 class="md-table-title"><i class="fa-solid fa-users"></i> Student Directory</h2>
+            <div class="md-table-controls">
+              <input type="text" id="md-search" placeholder="Search students..." oninput="debouncedRender()">
+              <select id="md-filter" style="padding:4px 10px;font-size:var(--text-xs);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)">
+                <option value="all">All</option>
+                <option value="low">Low Risk</option>
+                <option value="medium">Medium Risk</option>
+                <option value="high">High Risk</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto"><table class="md-table" id="md-table"><tbody id="md-table-body"></tbody></table></div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="md-charts-row">
+          <div class="md-chart-card">
+            <div class="md-chart-title">Readiness Distribution <span>Score buckets</span></div>
+            <div style="position:relative;height:220px"><canvas id="chart-readiness"></canvas></div>
+          </div>
+          <div class="md-chart-card">
+            <div class="md-chart-title">Placement Probability <span>Score buckets</span></div>
+            <div style="position:relative;height:220px"><canvas id="chart-placement"></canvas></div>
+          </div>
+        </div>
+
+        <div class="md-charts-row">
+          <div class="md-chart-card">
+            <div class="md-chart-title">Skill Distribution <span>Skill levels</span></div>
+            <div style="position:relative;height:220px"><canvas id="chart-skill"></canvas></div>
+          </div>
+          <div class="md-chart-card">
+            <div class="md-chart-title">Career Interests <span>Student career paths</span></div>
+            <div style="position:relative;height:220px"><canvas id="chart-career"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Top Talent -->
+        <div style="margin-bottom:var(--space-2)"><span style="font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-2)">Top Talent</span></div>
+        <div class="md-talent" id="md-talent"></div>
+
+        <!-- Insights -->
+        <div class="md-insights-section" id="md-insights-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3)">
+            <span style="font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--text)"><i class="fa-solid fa-brain" style="color:var(--primary);margin-right:var(--space-1)"></i> Mentor Insights</span>
+          </div>
+          <div class="md-insights-grid" id="md-insights-grid"></div>
+        </div>
+
+        <!-- Risks -->
+        <div class="md-risk-section" id="md-risk-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3)">
+            <span style="font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--text)"><i class="fa-solid fa-triangle-exclamation" style="color:#EF4444;margin-right:var(--space-1)"></i> Risk Detection</span>
+            <span id="md-risk-count" style="font-size:var(--text-xs);color:var(--text-3)"></span>
+          </div>
+          <div class="md-risk-grid" id="md-risk-grid"></div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="md-insights-section" id="md-bulk-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3)">
+            <span style="font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--text)"><i class="fa-solid fa-layer-group" style="color:var(--primary);margin-right:var(--space-1)"></i> Bulk Actions</span>
+          </div>
+          <div style="margin-bottom:var(--space-3)"><span style="font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-2)">Recommended Learning Plans</span></div>
+          <div class="md-bulk" id="md-bulk-plans"></div>
+          <div style="margin-bottom:var(--space-3)"><span style="font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-2)">Recommended Certifications</span></div>
+          <div class="md-bulk" id="md-bulk-certs"></div>
+          <div style="margin-bottom:var(--space-3)"><span style="font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-2)">Suggested Projects</span></div>
+          <div class="md-bulk" id="md-bulk-projects"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Student Detail Modal -->
+  <div class="pr-modal-overlay" id="student-modal">
+    <div class="pr-modal" style="max-width:640px">
+      <div class="pr-modal-header">
+        <h3 class="pr-modal-title" id="student-modal-title">Student Details</h3>
+        <button class="pr-modal-close" data-close="student-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="pr-modal-body" id="student-modal-body"></div>
+    </div>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/data/demo-students.js"></script>
+  <script src="js/services/mentor.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/pages/mentor-dashboard.js"></script>
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('skillpilot_state')
+        if (!raw) return
+        var s = JSON.parse(raw)
+        var user = s.user
+        if (!user) return
+        var nameEl = document.getElementById('dash-user-name')
+        if (nameEl) nameEl.textContent = user.name || 'Mentor'
+        var roleEl = document.getElementById('dash-user-role')
+        if (roleEl) roleEl.textContent = user.role || 'mentor'
+        var avatar = document.getElementById('dash-avatar')
+        if (avatar) {
+          var parts = (user.name || 'MN').split(' ')
+          avatar.textContent = (parts[0][0] || 'M') + (parts[1] ? parts[1][0] : 'N')
+        }
+        var subtitle = document.getElementById('dash-subtitle')
+        if (subtitle) subtitle.textContent = 'Welcome, ' + (user.name || 'Mentor') + '. Manage your cohort below.'
+      } catch (e) {}
+    })()
+  </script>
+</body>
+</html>

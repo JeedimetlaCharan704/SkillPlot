@@ -1,0 +1,20 @@
+{
+  "name": "skillpilot-ai",
+  "version": "2.0.0",
+  "description": "SkillPilot AI — Full-stack Career Intelligence Platform",
+  "scripts": {
+    "backend:dev": "cd backend && npm run dev",
+    "backend:start": "cd backend && npm start",
+    "backend:seed": "cd backend && node src/seed.js && node src/seed-demo-data.js",
+    "test": "cd backend && npm test",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose build",
+    "deploy:vercel": "vercel --prod",
+    "start:frontend": "npx serve . -p 8080",
+    "start:all": "concurrently \"npm run backend:dev\" \"npm run start:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}

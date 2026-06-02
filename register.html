@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — SkillPilot AI</title>
+  <meta name="description" content="Create your SkillPilot AI account and start your career journey.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#4F46E5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/login.css">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+</head>
+<body class="login-body">
+  <button class="login-theme-toggle" id="theme-toggle" aria-label="Toggle theme (light/dark/system)" title="Theme: light">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+
+  <div class="login-wrapper">
+    <!-- Left: Branding -->
+    <div class="login-branding" aria-hidden="true">
+      <div class="login-branding-content">
+        <div class="brand-badge">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          AI-Powered Career Intelligence
+        </div>
+
+        <div class="brand-logo">
+          <div class="brand-logo-icon">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+          <span class="brand-logo-text">SkillPilot</span>
+        </div>
+
+        <h1 class="brand-tagline">Start Your<br>Career Journey.</h1>
+
+        <p class="brand-subtitle">
+          Create a free account and get AI-powered resume analysis, placement predictions, portfolio building, and personalized career recommendations.
+        </p>
+
+        <div class="brand-stats">
+          <div class="brand-stat">
+            <span class="brand-stat-value">10K+</span>
+            <span class="brand-stat-label">Students Onboarded</span>
+          </div>
+          <div class="brand-stat">
+            <span class="brand-stat-value">500+</span>
+            <span class="brand-stat-label">Partner Companies</span>
+          </div>
+          <div class="brand-stat">
+            <span class="brand-stat-value">95%</span>
+            <span class="brand-stat-label">Career Readiness</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Register Panel -->
+    <div class="login-panel">
+      <div class="login-card">
+        <div class="login-card-header">
+          <div class="login-card-logo">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h2 class="login-card-title">Create Account</h2>
+          <p class="login-card-subtitle">Join SkillPilot and accelerate your career</p>
+        </div>
+
+        <!-- Register Form -->
+        <form class="login-form visible" id="register-form" autocomplete="off" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="e.g. Aryan Sharma" required autocomplete="name" aria-required="true">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required autocomplete="email" aria-required="true">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="At least 6 characters" minlength="6" required autocomplete="new-password" aria-required="true">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-confirm">Confirm Password</label>
+            <input type="password" id="reg-confirm" class="form-input" placeholder="Re-enter password" minlength="6" required autocomplete="new-password" aria-required="true">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-role">I am a</label>
+            <select id="reg-role" class="form-input" required>
+              <option value="student">Student</option>
+              <option value="mentor">Mentor</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
+          </div>
+
+          <button type="submit" class="login-submit-btn" id="register-submit-btn">
+            <span class="btn-text">Create Account</span>
+          </button>
+
+          <p class="login-footer-text" style="margin-top:var(--space-4);">
+            Already have an account? <a href="/login.html" tabindex="0">Sign in</a>
+          </p>
+
+          <div id="register-skeleton" style="display:none"></div>
+        </form>
+
+        <!-- Divider -->
+        <div class="login-divider"><span>Or continue with</span></div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+          <button class="social-btn" data-provider="google" aria-label="Sign up with Google">
+            <i class="fa-brands fa-google"></i>
+          </button>
+          <button class="social-btn" data-provider="github" aria-label="Sign up with GitHub">
+            <i class="fa-brands fa-github"></i>
+          </button>
+          <button class="social-btn" data-provider="linkedin" aria-label="Sign up with LinkedIn">
+            <i class="fa-brands fa-linkedin-in"></i>
+          </button>
+        </div>
+
+        <p class="login-footer-text">
+          By signing up, you agree to our
+          <a href="#" tabindex="-1">Terms of Service</a> and
+          <a href="#" tabindex="-1">Privacy Policy</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/skeleton.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/pages/register.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {})
+    }
+  </script>
+</body>
+</html>

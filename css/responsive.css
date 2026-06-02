@@ -1,0 +1,141 @@
+@media (max-width: 1200px) {
+  .dashboard-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  .sidebar-backdrop {
+    display: block;
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  .main-content.expanded {
+    margin-left: 0;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .page-content {
+    padding: var(--space-4);
+  }
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .navbar {
+    padding: 0 var(--space-4);
+  }
+  .nav-search {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  .stat-card {
+    padding: var(--space-4);
+  }
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: var(--text-lg);
+  }
+  .stat-details h3 {
+    font-size: var(--text-xl);
+  }
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .modal {
+    margin: var(--space-3);
+    max-height: 85vh;
+  }
+  .card-header {
+    padding: var(--space-4);
+  }
+  .card-body {
+    padding: var(--space-4);
+  }
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    white-space: nowrap;
+    padding: var(--space-3) var(--space-4);
+  }
+  .section-title {
+    font-size: var(--text-xl);
+  }
+  .toast-container {
+    left: var(--space-4);
+    right: var(--space-4);
+    bottom: var(--space-4);
+    max-width: none;
+  }
+  h1 { font-size: var(--text-2xl); }
+  h2 { font-size: var(--text-xl); }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-content {
+    padding: var(--space-3);
+  }
+  .navbar {
+    padding: 0 var(--space-3);
+    height: 56px;
+  }
+  .nav-left .page-title {
+    font-size: var(--text-base);
+  }
+  .user-info {
+    display: none;
+  }
+  .btn {
+    padding: 8px 14px;
+    font-size: var(--text-xs);
+  }
+  .card-header h3 {
+    font-size: var(--text-base);
+  }
+  .modal-header h3 {
+    font-size: var(--text-base);
+  }
+}
+
+@media (min-width: 993px) {
+  .sidebar-backdrop {
+    display: none !important;
+  }
+  .mobile-toggle {
+    display: none !important;
+  }
+}

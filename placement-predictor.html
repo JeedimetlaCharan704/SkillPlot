@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Placement Predictor</title>
+  <meta name="description" content="Educational placement forecast. Every prediction is traceable to weighted factors — no random percentages.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_theme') || 'system'
+      var theme = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.setAttribute('data-theme-mode', saved)
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/placement.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+  <nav class="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <div class="dash-logo"><i class="fa-solid fa-brain dash-logo-icon"></i><span class="dash-logo-text">SkillPilot AI</span></div>
+      </div>
+      <div class="dash-nav-right">
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+        <div class="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info"><span class="dash-user-name" id="dash-user-name">Aryan Sharma</span><span class="dash-user-role" id="dash-user-role">Student</span></div>
+          <button class="dash-logout-btn" id="dash-logout-btn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-layout">
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item active" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="internships.html" class="dash-sidebar-item" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Placement Predictor</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Educational placement forecast using a weighted factor model. Every prediction is traceable — no random percentages.</p>
+        </div>
+        <div class="dash-header-actions">
+          <button class="dash-export-btn" id="export-pdf" title="Export PDF"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          <button class="dash-export-btn" id="export-json" title="Export JSON" style="background:var(--surface);color:var(--text);border-color:var(--border)"><i class="fa-solid fa-code"></i> JSON</button>
+          <button class="dash-export-btn" id="export-md" title="Export Markdown" style="background:var(--surface);color:var(--text);border-color:var(--border)"><i class="fa-solid fa-markdown"></i> MD</button>
+          <button class="dash-refresh-btn" id="predict-btn" title="Run prediction"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+      </div>
+
+      <!-- === OVERVIEW === -->
+      <section class="pl-section" id="section-overview">
+        <div class="pl-overview-grid" id="pl-overview-grid">
+          <div class="skeleton skeleton-pl-card" data-skel="ov1"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:20%;height:36px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-pl-card" data-skel="ov2"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:20%;height:36px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-pl-card" data-skel="ov3"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:20%;height:36px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+          <div class="skeleton skeleton-pl-card" data-skel="ov4"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:20%;height:36px;margin:8px 0"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+        </div>
+        <p class="pl-disclaimer">⚠ Educational Placement Forecast — Simulation Based on Current Profile. Actual outcomes depend on interview performance, market conditions, and company policies.</p>
+      </section>
+
+      <!-- === FACTOR BREAKDOWN + GAUGE === -->
+      <div class="pl-two-col">
+        <section class="pl-section" id="section-factors">
+          <div class="dash-section-header"><h2 class="dash-section-title">Factor Breakdown</h2></div>
+          <div class="pl-factors" id="pl-factors">
+            <div class="skeleton skeleton-pl-card" data-skel="fac"><div class="skeleton skeleton-title" style="width:30%"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          </div>
+        </section>
+        <section class="pl-section" id="section-gauge">
+          <div class="dash-section-header"><h2 class="dash-section-title">Probability</h2></div>
+          <div class="pl-gauge-card">
+            <div class="chart-wrapper" id="gauge-container" style="height:260px"><canvas id="chart-gauge"></canvas></div>
+            <div class="pl-gauge-detail" id="pl-gauge-detail"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- === CHARTS === -->
+      <section class="pl-section" id="section-charts">
+        <div class="dash-section-header"><h2 class="dash-section-title">Visualizations</h2></div>
+        <div class="pl-chart-grid">
+          <div class="chart-card"><div class="chart-card-header"><h3>Employability Breakdown</h3></div><div class="chart-wrapper" style="height:200px"><canvas id="chart-breakdown"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h3>Salary Range</h3></div><div class="chart-wrapper" style="height:200px"><canvas id="chart-salary"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h3>Company Match</h3></div><div class="chart-wrapper" style="height:200px"><canvas id="chart-company"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h3>Impact Analysis</h3></div><div class="chart-wrapper" style="height:200px"><canvas id="chart-impact"></canvas></div></div>
+        </div>
+      </section>
+
+      <!-- === SALARY ESTIMATION === -->
+      <section class="pl-section" id="section-salary">
+        <div class="dash-section-header"><h2 class="dash-section-title">Salary Estimation</h2><span class="dash-section-badge" id="salary-premium-badge"></span></div>
+        <div class="pl-salary-grid" id="pl-salary-grid">
+          <div class="skeleton skeleton-pl-card" data-skel="sal"><div class="skeleton skeleton-title" style="width:30%"></div><div class="skeleton skeleton-text" style="width:60%"></div></div>
+        </div>
+      </section>
+
+      <!-- === COMPANY MATCHING === -->
+      <section class="pl-section" id="section-companies">
+        <div class="dash-section-header"><h2 class="dash-section-title">Company Matching</h2><span class="dash-section-badge" id="company-count">0 eligible</span></div>
+        <div class="pl-company-grid" id="pl-company-grid">
+          <div class="skeleton skeleton-pl-card" data-skel="cmp"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:70%"></div></div>
+        </div>
+      </section>
+
+      <!-- === RECRUITER VIEW === -->
+      <div class="pl-two-col">
+        <section class="pl-section" id="section-recruiter">
+          <div class="dash-section-header"><h2 class="dash-section-title">Recruiter View</h2></div>
+          <div class="pl-recruiter" id="pl-recruiter">
+            <div class="skeleton skeleton-pl-card" data-skel="rec"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          </div>
+        </section>
+        <section class="pl-section" id="section-improvements">
+          <div class="dash-section-header"><h2 class="dash-section-title">Improvements</h2></div>
+          <div class="pl-improvements" id="pl-improvements">
+            <div class="skeleton skeleton-pl-card" data-skel="imp"><div class="skeleton skeleton-title" style="width:40%"></div><div class="skeleton skeleton-text" style="width:80%"></div></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- === SCENARIO SIMULATOR === -->
+      <section class="pl-section" id="section-scenarios">
+        <div class="dash-section-header"><h2 class="dash-section-title">Scenario Simulator</h2><span class="dash-section-badge">What-If</span></div>
+        <div class="pl-scenarios" id="pl-scenarios">
+          <p class="pl-scenario-placeholder">Click a scenario to see how it changes your placement forecast.</p>
+          <div class="pl-scenario-grid" id="pl-scenario-grid"></div>
+          <div class="pl-scenario-result" id="pl-scenario-result"></div>
+        </div>
+      </section>
+
+      <!-- === STEPS === -->
+      <section class="pl-section" id="section-steps">
+        <div class="dash-section-header"><h2 class="dash-section-title">Calculation Trace</h2><button class="dash-section-action" id="toggle-steps">Show</button></div>
+        <div class="pl-steps hidden" id="pl-steps"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/data/career-paths.js"></script>
+  <script src="js/data/companies.js"></script>
+  <script src="js/data/placement-data.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/resume.service.js"></script>
+  <script src="js/services/skill.service.js"></script>
+  <script src="js/services/career.service.js"></script>
+  <script src="js/services/placement.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/components/error-boundary.js"></script>
+  <script src="js/utils/kpi.js"></script>
+  <script src="js/pages/placement.js"></script>
+</body>
+</html>

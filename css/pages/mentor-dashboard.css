@@ -1,0 +1,99 @@
+/* ============================================================
+   MENTOR DASHBOARD — SKILLPILOT AI
+   ============================================================ */
+
+/* ===== OVERVIEW GRID ===== */
+.md-overview { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:var(--space-3); margin-bottom:var(--space-4) }
+.md-stat-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--space-3); text-align:center }
+.md-stat-label { font-size:10px; color:var(--text-3); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px }
+.md-stat-value { font-size:var(--text-lg); font-weight:var(--weight-bold); color:var(--text) }
+.md-stat-sub { font-size:10px; color:var(--text-3); margin-top:2px }
+
+/* ===== TABLE ===== */
+.md-table-wrap { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin-bottom:var(--space-4) }
+.md-table-header { display:flex; justify-content:space-between; align-items:center; padding:var(--space-3) var(--space-4); border-bottom:1px solid var(--border) }
+.md-table-title { font-size:var(--text-sm); font-weight:var(--weight-semibold); color:var(--text); display:flex; align-items:center; gap:var(--space-2) }
+.md-table-title i { color:var(--primary) }
+.md-table-controls { display:flex; gap:var(--space-2); align-items:center }
+.md-table-controls input { padding:4px 10px; font-size:var(--text-xs); border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--text); width:140px }
+
+.md-table { width:100%; border-collapse:collapse }
+.md-table th { text-align:left; padding:var(--space-2) var(--space-3); font-size:10px; font-weight:var(--weight-semibold); color:var(--text-3); text-transform:uppercase; letter-spacing:0.04em; border-bottom:1px solid var(--border); background:var(--bg-2) }
+.md-table td { padding:var(--space-2) var(--space-3); font-size:var(--text-xs); color:var(--text); border-bottom:1px solid var(--border) }
+.md-table tr:hover { background:var(--bg-2) }
+.md-table tr:last-child td { border-bottom:none }
+
+.md-risk-badge { display:inline-block; padding:1px 8px; border-radius:8px; font-size:10px; font-weight:var(--weight-medium) }
+.md-risk-badge.low { background:#10B98115; color:#10B981 }
+.md-risk-badge.medium { background:#F59E0B15; color:#F59E0B }
+.md-risk-badge.high { background:#EF444415; color:#EF4444 }
+.md-risk-badge.critical { background:#EF444430; color:#EF4444; font-weight:var(--weight-bold) }
+
+.md-clickable { cursor:pointer; transition:color 0.15s }
+.md-clickable:hover { color:var(--primary) }
+
+.md-action-btn { padding:3px 10px; font-size:10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:transparent; color:var(--text-2); cursor:pointer; transition:all 0.15s }
+.md-action-btn:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-1) }
+
+/* ===== CHARTS ROW ===== */
+.md-charts-row { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); margin-bottom:var(--space-4) }
+.md-chart-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-4) }
+.md-chart-title { font-size:var(--text-xs); font-weight:var(--weight-semibold); color:var(--text-2); margin-bottom:var(--space-3); display:flex; justify-content:space-between; align-items:center }
+
+/* ===== TOP TALENT ===== */
+.md-talent { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:var(--space-3); margin-bottom:var(--space-4) }
+.md-talent-card { padding:var(--space-3); border:1px solid var(--border); border-radius:var(--radius-md); background:var(--card-bg); text-align:center }
+.md-talent-icon { font-size:20px; margin-bottom:var(--space-1); color:var(--primary) }
+.md-talent-name { font-size:var(--text-xs); font-weight:var(--weight-semibold); color:var(--text) }
+.md-talent-label { font-size:9px; color:var(--text-3); margin-top:2px }
+.md-talent-value { font-size:var(--text-sm); font-weight:var(--weight-bold); color:var(--primary); margin-top:2px }
+
+/* ===== INSIGHTS ===== */
+.md-insights-section { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-4); margin-bottom:var(--space-4) }
+.md-insights-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:var(--space-3) }
+.md-insight-card { padding:var(--space-3); border:1px solid var(--border); border-radius:var(--radius-md) }
+.md-insight-title { font-size:var(--text-xs); font-weight:var(--weight-semibold); color:var(--text); margin-bottom:var(--space-2); display:flex; align-items:center; gap:var(--space-1) }
+.md-insight-item { font-size:10px; color:var(--text-2); padding:2px 0; display:flex; justify-content:space-between }
+.md-insight-item span { color:var(--text-3) }
+
+/* ===== RISK LIST ===== */
+.md-risk-section { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-4); margin-bottom:var(--space-4) }
+.md-risk-grid { display:grid; gap:var(--space-2) }
+.md-risk-student { padding:var(--space-2) var(--space-3); border:1px solid var(--border); border-radius:var(--radius-md) }
+.md-risk-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-1); cursor:pointer }
+.md-risk-name { font-size:var(--text-xs); font-weight:var(--weight-semibold); color:var(--text) }
+.md-risk-tags { display:flex; flex-wrap:wrap; gap:3px; margin-top:var(--space-1) }
+.md-risk-tag { font-size:9px; padding:1px 6px; border-radius:6px; background:var(--bg-2); color:var(--text-3) }
+
+/* ===== BULK ACTIONS ===== */
+.md-bulk { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:var(--space-3); margin-bottom:var(--space-4) }
+.md-bulk-card { padding:var(--space-3); border:1px solid var(--border); border-radius:var(--radius-md); background:var(--card-bg) }
+.md-bulk-title { font-size:var(--text-xs); font-weight:var(--weight-semibold); color:var(--text); margin-bottom:var(--space-1) }
+.md-bulk-desc { font-size:10px; color:var(--text-3); line-height:1.4; margin-bottom:var(--space-1) }
+.md-bulk-students { font-size:9px; color:var(--primary); font-weight:var(--weight-medium) }
+
+/* ===== STUDENT DETAIL MODAL ===== */
+.md-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-3) }
+.md-detail-stat { padding:var(--space-2); border:1px solid var(--border); border-radius:var(--radius-sm); text-align:center }
+.md-detail-stat-value { font-size:var(--text-sm); font-weight:var(--weight-bold); color:var(--primary) }
+.md-detail-stat-label { font-size:9px; color:var(--text-3) }
+.md-detail-list { display:flex; flex-wrap:wrap; gap:4px; margin-top:var(--space-1) }
+.md-detail-list span { font-size:10px; padding:2px 8px; background:var(--bg-2); border-radius:6px; color:var(--text-2) }
+.md-detail-timeline { display:flex; flex-direction:column; gap:var(--space-1); margin-top:var(--space-1); max-height:120px; overflow-y:auto }
+.md-detail-tl-item { font-size:10px; color:var(--text-2); padding:2px 0; border-bottom:1px solid var(--border) }
+.md-detail-tl-item:last-child { border-bottom:none }
+.md-detail-tl-date { font-size:9px; color:var(--text-3) }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:992px) {
+  .md-charts-row { grid-template-columns:1fr }
+  .md-detail-grid { grid-template-columns:1fr }
+  .md-table-wrap { overflow-x:auto }
+}
+@media(max-width:576px) {
+  .md-overview { grid-template-columns:repeat(2,1fr) }
+  .md-talent { grid-template-columns:repeat(2,1fr) }
+  .md-insights-grid { grid-template-columns:1fr }
+  .md-bulk { grid-template-columns:1fr }
+  .md-table-controls input { width:100px }
+}

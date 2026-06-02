@@ -1,0 +1,468 @@
+/* ===== RESUME ANALYZER — EXPLAINABLE ENGINE ===== */
+
+/* ---- INPUT ZONE ---- */
+.ra-section {
+  margin-bottom: var(--space-6);
+}
+
+.ra-input-zone {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.ra-input-methods {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.ra-input-method {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border-bottom: 2px solid transparent;
+}
+
+.ra-input-method:hover {
+  color: var(--text-2);
+  background: var(--surface);
+}
+
+.ra-input-method.active {
+  color: var(--primary);
+  background: var(--surface);
+  border-bottom-color: var(--primary);
+}
+
+.ra-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: var(--space-4);
+  border: none;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+}
+
+.ra-textarea:focus {
+  box-shadow: inset 0 0 0 2px var(--primary-light);
+}
+
+/* ---- SCORE CARDS ---- */
+.ra-score-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-3);
+}
+
+.ra-score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.ra-score-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.ra-score-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+}
+
+.ra-score-card:nth-child(1)::before { background: var(--primary); }
+.ra-score-card:nth-child(2)::before { background: var(--secondary); }
+.ra-score-card:nth-child(3)::before { background: var(--accent); }
+.ra-score-card:nth-child(4)::before { background: var(--success); }
+.ra-score-card:nth-child(5)::before { background: var(--warning); }
+
+.ra-score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.ra-score-label {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ra-score-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.ra-score-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--surface-3);
+  margin: var(--space-2) 0;
+  overflow: hidden;
+}
+
+.ra-score-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 600ms ease;
+}
+
+.ra-score-conf {
+  font-size: 10px;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---- TWO COLUMN ---- */
+.ra-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+/* ---- KEYWORD CATEGORIES ---- */
+.ra-keyword-categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ra-kw-category {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.ra-kw-category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.ra-kw-category-name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text);
+}
+
+.ra-kw-category-count {
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  padding: 1px 8px;
+  border-radius: 10px;
+}
+
+.ra-kw-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ra-kw-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-weight: var(--weight-medium);
+}
+
+.ra-kw-chip.high-value {
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+.ra-kw-chip.missing {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+.ra-kw-chip.found { background: var(--primary-bg); color: var(--primary); }
+
+/* ---- SECTION ANALYSIS ---- */
+.ra-section-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ra-section-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.ra-section-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+
+.ra-section-icon.present { background: var(--success-light); color: var(--success); }
+.ra-section-icon.weak { background: var(--warning-light); color: var(--warning); }
+.ra-section-icon.missing { background: var(--error-light); color: var(--error); }
+
+.ra-section-name {
+  flex: 1;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text);
+}
+
+.ra-section-status {
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.ra-section-status.present { background: var(--success-light); color: var(--success-dark); }
+.ra-section-status.weak { background: var(--warning-light); color: var(--warning-dark); }
+.ra-section-status.missing { background: var(--error-light); color: var(--error); }
+
+/* ---- CHARTS ---- */
+.ra-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.ra-chart-grid .chart-wrapper-sm {
+  height: 180px;
+}
+
+.ra-chart-grid .chart-card {
+  padding: var(--space-3);
+}
+
+/* ---- INSIGHTS ---- */
+.ra-insights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ra-insight-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.ra-insight-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.ra-insight-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs);
+}
+
+.ra-insight-icon.strength { background: var(--success-light); color: var(--success); }
+.ra-insight-icon.weakness { background: var(--error-light); color: var(--error); }
+.ra-insight-icon.impact { background: var(--primary-bg); color: var(--primary); }
+
+.ra-insight-title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text);
+}
+
+.ra-insight-text {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ---- COMPARISON ---- */
+.ra-compare {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ra-compare-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.ra-compare-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.ra-compare-title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text);
+}
+
+.ra-compare-match {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.ra-compare-detail {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  margin-bottom: var(--space-2);
+  line-height: 1.4;
+}
+
+.ra-compare-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ---- CALCULATION STEPS ---- */
+.ra-steps {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.ra-steps-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ra-steps-list li {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.ra-steps-list li:last-child { border-bottom: none; }
+
+.ra-steps-list li::before {
+  content: attr(data-step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+}
+
+.ra-steps-formula {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  overflow-x: auto;
+}
+
+/* ---- SKELETON VARIANTS ---- */
+.skeleton-ra-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+/* ---- DARK MODE ---- */
+[data-theme="dark"] .ra-input-zone,
+[data-theme="dark"] .ra-textarea,
+[data-theme="dark"] .ra-score-card,
+[data-theme="dark"] .ra-kw-category,
+[data-theme="dark"] .ra-section-item,
+[data-theme="dark"] .ra-insight-card,
+[data-theme="dark"] .ra-compare-card,
+[data-theme="dark"] .ra-steps { background: var(--dark); border-color: var(--dark-3); }
+
+[data-theme="dark"] .ra-input-methods { background: var(--dark-2); border-color: var(--dark-3); }
+[data-theme="dark"] .ra-input-method.active { background: var(--dark); }
+[data-theme="dark"] .ra-input-method:hover { background: var(--dark-2); }
+[data-theme="dark"] .ra-steps-formula { background: var(--dark-2); }
+
+/* ---- UTILITY ---- */
+.hidden { display: none !important; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 1200px) {
+  .ra-score-grid { grid-template-columns: repeat(3, 1fr); }
+  .ra-two-col { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 992px) {
+  .ra-score-grid { grid-template-columns: repeat(2, 1fr); }
+  .ra-chart-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .ra-score-grid { grid-template-columns: 1fr; }
+  .ra-input-methods { flex-direction: column; }
+}

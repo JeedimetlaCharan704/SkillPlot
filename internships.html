@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillPilot AI — Internships</title>
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('skillpilot_state')
+      try {
+        var s = saved ? JSON.parse(saved) : {}
+        var mode = s.theme || 'system'
+        var theme = mode === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : mode
+        document.documentElement.setAttribute('data-theme', theme)
+        document.documentElement.setAttribute('data-theme-mode', mode)
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light')
+        document.documentElement.setAttribute('data-theme-mode', 'light')
+      }
+    })()
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <link rel="stylesheet" href="css/pages/internships.css">
+  <script src="js/route-guard.js"></script>
+</head>
+<body class="dash-body">
+
+  <!-- Navbar -->
+  <nav class="dash-nav" id="dash-nav">
+    <div class="dash-nav-inner">
+      <div class="dash-nav-left">
+        <button class="dash-nav-toggle" id="dash-sidebar-toggle" aria-label="Toggle sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="dash-logo">
+          <i class="fa-solid fa-brain dash-logo-icon"></i>
+          <span class="dash-logo-text">SkillPilot AI</span>
+        </div>
+      </div>
+      <div class="dash-nav-right">
+        <span class="dash-streak" id="dash-streak-badge" title="Learning streak">
+          <i class="fa-solid fa-fire"></i> <span id="dash-streak-count">0</span>
+        </span>
+        <button class="dash-theme-btn" id="dash-theme-toggle" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <div class="dash-user-badge" id="dash-user-badge">
+          <div class="dash-avatar" id="dash-avatar">AS</div>
+          <div class="dash-user-info">
+            <span class="dash-user-name" id="dash-user-name">Aryan Sharma</span>
+            <span class="dash-user-role" id="dash-user-role">Student</span>
+          </div>
+          <button type="button" class="dash-logout-btn" id="dash-logout-btn" title="Sign out">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="dash-layout">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <nav class="dash-sidebar-nav" id="dash-sidebar-nav">
+        <a href="index.html" class="dash-sidebar-item" data-page="index.html"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="resume-analyzer.html" class="dash-sidebar-item" data-page="resume-analyzer.html"><i class="fa-solid fa-file-lines"></i><span>Resume Analyzer</span></a>
+        <a href="skill-gap-analyzer.html" class="dash-sidebar-item" data-page="skill-gap-analyzer.html"><i class="fa-solid fa-arrows-left-right"></i><span>Skill Gap</span></a>
+        <a href="placement-predictor.html" class="dash-sidebar-item" data-page="placement-predictor.html"><i class="fa-solid fa-chart-line"></i><span>Placement</span></a>
+        <a href="internships.html" class="dash-sidebar-item active" data-page="internships.html"><i class="fa-solid fa-briefcase"></i><span>Internships</span></a>
+        <a href="profile.html" class="dash-sidebar-item" data-page="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a href="github-analytics.html" class="dash-sidebar-item" data-page="github-analytics.html"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+        <a href="portfolio-builder.html" class="dash-sidebar-item" data-page="portfolio-builder.html"><i class="fa-solid fa-briefcase"></i><span>Portfolio</span></a>
+        <a href="brand-checker.html" class="dash-sidebar-item" data-page="brand-checker.html"><i class="fa-solid fa-tag"></i><span>Brand Checker</span></a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main" id="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Available Internships</h1>
+          <p class="dash-subtitle" id="dash-subtitle">Find and apply to top internship opportunities.</p>
+        </div>
+      </div>
+
+      <!-- Internships Content -->
+      <div class="page-content" style="padding:0;max-width:none;">
+        <div id="internships-section" class="content-section">
+          <div class="filter-section card mb-4">
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="search-box" style="width: 100%; max-width: 400px;">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="internship-search" placeholder="Search internships, companies..." oninput="filterInternships(document.querySelector('.filter-buttons .btn.active')?.textContent?.trim()||'All')">
+              </div>
+              <div class="filter-buttons">
+                <button class="btn btn-outline-primary active" onclick="filterInternships('All')">All</button>
+                <button class="btn btn-outline-primary" onclick="filterInternships('IT / Software')">IT / Software</button>
+                <button class="btn btn-outline-primary" onclick="filterInternships('Core Engg')">Core Engg</button>
+                <button class="btn btn-outline-primary" onclick="filterInternships('Management')">Management</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="internships-grid" id="student-internships-grid">
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="modal-overlay hidden">
+    <div class="modal-content card">
+      <div class="card-header flex-between">
+        <h3>Edit Profile</h3>
+        <button id="close-modal-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="card-body">
+        <form id="edit-profile-form">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="input-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="input-email" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="input-phone" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Address / Hostel</label>
+            <input type="text" id="input-location" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>LinkedIn URL</label>
+            <input type="url" id="input-linkedin" class="form-control" placeholder="https://linkedin.com/in/yourprofile">
+          </div>
+          <div class="form-group">
+            <label>GitHub URL</label>
+            <input type="url" id="input-github" class="form-control" placeholder="https://github.com/yourprofile">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full mt-4">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apply Form Modal -->
+  <div id="apply-modal" class="modal-overlay hidden">
+    <div class="modal-content card">
+      <div class="card-header flex-between">
+        <h3>Submit Application</h3>
+        <button id="close-apply-modal" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="card-body">
+        <form id="apply-form">
+          <div class="form-group">
+            <label>Why should we hire you? (Cover Letter)</label>
+            <textarea class="form-control" rows="4" placeholder="Briefly describe your skills and interest..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Portfolio / GitHub Link (Optional)</label>
+            <input type="url" class="form-control" placeholder="https://github.com/yourprofile">
+          </div>
+          <div style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+              <label>Earliest Start Date</label>
+              <input type="date" class="form-control" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>Willing to Relocate?</label>
+              <select class="form-control" required>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+                <option value="remote">Only Remote</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <label>Resume</label>
+            <p style="font-size: 0.8rem; color: var(--text-3); margin-bottom: 5px;">Your default profile resume will be attached.</p>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full mt-4">Confirm & Apply</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store/store.js"></script>
+  <script src="js/data/demo-profile.js"></script>
+  <script src="js/data/skills-db.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/session.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    (function () {
+      var THEME_CYCLE = ['light', 'dark', 'system']
+      var THEME_ICONS = { light: 'fa-solid fa-moon', dark: 'fa-solid fa-sun', system: 'fa-solid fa-circle-half-stroke' }
+
+      function initTheme () {
+        var toggle = document.getElementById('dash-theme-toggle')
+        if (!toggle) return
+        function getMode () { return document.documentElement.getAttribute('data-theme-mode') || 'light' }
+        function setMode (mode) {
+          var eff = mode === 'system'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : mode
+          document.documentElement.setAttribute('data-theme', eff)
+          document.documentElement.setAttribute('data-theme-mode', mode)
+          try {
+            var raw = localStorage.getItem('skillpilot_state')
+            var s = raw ? JSON.parse(raw) : {}
+            s.theme = mode
+            localStorage.setItem('skillpilot_state', JSON.stringify(s))
+          } catch (e) {}
+          var icon = toggle.querySelector('i')
+          icon.className = THEME_ICONS[mode] || THEME_ICONS.light
+        }
+        setMode(getMode())
+        toggle.addEventListener('click', function () {
+          var idx = THEME_CYCLE.indexOf(getMode())
+          setMode(THEME_CYCLE[(idx + 1) % THEME_CYCLE.length])
+        })
+      }
+
+      function initSidebar () {
+        var toggle = document.getElementById('dash-sidebar-toggle')
+        var sidebar = document.getElementById('dash-sidebar')
+        if (!toggle || !sidebar) return
+        toggle.addEventListener('click', function () {
+          sidebar.classList.toggle('open')
+          document.body.classList.toggle('sidebar-open')
+        })
+        sidebar.querySelectorAll('.dash-sidebar-item').forEach(function (item) {
+          item.addEventListener('click', function () {
+            sidebar.querySelectorAll('.dash-sidebar-item').forEach(function (i) { i.classList.remove('active') })
+            this.classList.add('active')
+            if (window.innerWidth <= 992) sidebar.classList.remove('open')
+          })
+        })
+      }
+
+      function initLogout () {
+        var btn = document.getElementById('dash-logout-btn')
+        if (!btn) return
+        btn.addEventListener('click', async function () {
+          if (typeof SessionManager !== 'undefined') SessionManager.stop()
+          if (typeof AuthService !== 'undefined') await AuthService.logout()
+          else { try { localStorage.removeItem('skillpilot_state') } catch (e) {} }
+          window.location.href = 'login.html'
+        })
+      }
+
+      function loadUser () {
+        try {
+          var raw = localStorage.getItem('skillpilot_state')
+          if (!raw) return
+          var s = JSON.parse(raw)
+          var user = s.user
+          if (!user) return
+          var nameEl = document.getElementById('dash-user-name')
+          if (nameEl) nameEl.textContent = user.name || 'User'
+          var roleEl = document.getElementById('dash-user-role')
+          if (roleEl) roleEl.textContent = user.role || 'student'
+          var avatar = document.getElementById('dash-avatar')
+          if (avatar) {
+            var parts = (user.name || 'US').split(' ')
+            avatar.textContent = (parts[0][0] || '') + (parts[1] ? parts[1][0] : parts[0][1] || '')
+          }
+          var streakBadge = document.getElementById('dash-streak-count')
+          var streak = s.learningStreak
+          if (streakBadge && streak) streakBadge.textContent = streak.current || 0
+          var subtitle = document.getElementById('dash-subtitle')
+          if (subtitle) subtitle.textContent = 'Welcome, ' + (user.name || 'there') + '. Browse internships below.'
+        } catch (e) {}
+      }
+
+      initTheme()
+      initSidebar()
+      initLogout()
+      loadUser()
+    })()
+
+    function filterInternships (category) {
+      document.querySelectorAll('.filter-buttons .btn').forEach(function (b) {
+        b.classList.remove('active')
+        if (b.textContent.trim() === category) b.classList.add('active')
+      })
+      var cards = document.querySelectorAll('.internship-grid-card')
+      if (category === 'All') {
+        cards.forEach(function (c) { c.style.display = '' })
+        return
+      }
+      var keywords = category === 'IT / Software' ? ['Frontend', 'Backend', 'UI/UX', 'Data', 'Software', 'Developer', 'code', 'server', 'analyst'] : category === 'Core Engg' ? ['Hardware', 'microchip', 'semiconductor', 'testing', 'quality', 'Core'] : ['Management', 'business', 'manager']
+      cards.forEach(function (c) {
+        var text = c.textContent.toLowerCase()
+        var match = keywords.some(function (k) { return text.includes(k.toLowerCase()) })
+        c.style.display = match ? '' : 'none'
+      })
+    }
+  </script>
+</body>
+</html>
